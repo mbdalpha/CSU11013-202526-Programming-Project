@@ -1,0 +1,51 @@
+/*
+CHANGELOG:
+T. Byrne, Initialises repo and adds planning.txt, outlining spec and a few ideas for impliamentation, 15:20, 06/03/2026
+
+*/
+
+
+# Specification
+- Read CSV file of flights, render it, and allow user to interact with it
+- Exact layout of CSV can be found in the spec sheet, notibly fields may be empty
+- 537k entries is the maximum expected
+
+## Code structure
+- Turn from CSV -> classes
+- Select subset of data
+- Draw data to screen
+- Take in user commands and react to it - at least needs to be able to filter by particular airport, date range, and sort by lateness
+- Code to tie these parts together
+
+## Other requirements
+- Saved as GitHub repo
+- Code must also be commented in the form "M. Jones, Added Graph class for displaying results, 8pm, 1/3/2026"
+- 1000 word report at end
+- 3 minute video presentation
+- Last lab has QnA
+
+
+# Ideas
+- If you are not familiar with how git works, see: https://learngitbranching.js.org/
+
+- Interacting with the CSV:
+    - Spec has loadBytes() and loadStrings() listed, but not loadTable() - which may be useful. See: https://processing.org/reference/loadTable_.html
+    - Processing can use Java libraries (with a bit of setup, see: https://stackoverflow.com/questions/43004770/how-to-add-external-libraries-in-processing - as outlined in this, eclipse would make development easier but unsure if we would be allowed to use it as the spec requires asking before an IDE change)
+        - OpenCSV is useful for parsing - can read into beans and use multithreading for high proformance
+- Selecting subset of data
+    - Just a matter of matching the data in columns and making a new table or whatever from that
+    - Depending on how the data is stored, methods like binary searching may make it more proformant
+- Drawing data to screen
+    - 2d or 3d map showing lines/heatmap for where flights go to and from
+        - eg. a route that is often later could show up as hotter than one that isn'table
+    - Graphs
+        - Curve of lateness distribution
+        - Bar chart of destinations
+- Taking in user commands
+    - Tickbox choice between display modes and what to filter by
+    - For searching for airport - type in with drop down element similar to as on some websites
+    - Allow user to type in date/lateness ranges and also have slider?
+
+- Dealing with the code commenting stuff
+    - Put a changelog above each function and add who worked on it and what it did in the spec outlines format on a new time each time a change is made.
+    - Ensure the same as what is written in the comment just for clarity perhaps?
