@@ -1,17 +1,19 @@
-ArrayList<Flight> allFlights = new ArrayList<Flight>();
-ArrayList<Flight> searchResults = new ArrayList<Flight>();
+ArrayList<Flight> allFlights=new ArrayList<Flight>();
+ArrayList<Flight> searchResults=new ArrayList<Flight>();
 
-String fromInput = "";
-String toInput = "";
-int activeBox = 0; 
-boolean showResults = false;
-float scrollOffset = 0; 
+String fromInput="";
+String toInput="";
+int activeBox=0; 
+boolean showResults=false;
+float scrollOffset=0; 
+float targetOffset=0;
+float easing=0.15;
 
-void setup() {
-  size(1200, 800);
-  String[] lines = loadStrings("flights_full.csv"); 
-  for (int i = 1; i < lines.length; i++) {
-    if (lines[i].trim().length() > 0) {
+void setup(){
+  size(1200,800);
+  String[] lines=loadStrings("flights2k.csv"); 
+  for(int i=1;i<lines.length;i++){
+    if(lines[i].trim().length()>0){
       allFlights.add(new Flight(lines[i]));
     }
   }
@@ -19,6 +21,10 @@ void setup() {
 
 void draw() {
   background(10, 25, 45); 
+  
+  float dx=targetOffset-scrollOffset;
+  scrollOffset+=dx*easing;
+  
   drawHeaderSearch();
   if (showResults) {
     drawResultsPanel();
@@ -54,22 +60,29 @@ void drawResultsPanel() {
   textSize(16);
   text("Results: " + searchResults.size(), 880, 160);
   
-  for (int i = 0; i < searchResults.size(); i++) {
-    float yPos = 180 + (i * 65) + scrollOffset; 
+  push();
+  clip(870,170,310,600);
+  
+  for(int i=0;i<searchResults.size();i++){
+    float yPos=170+(i*75)+scrollOffset;
     
-    if (yPos > 170 && yPos < 730) {
+    if(yPos>100&&yPos<800){
       Flight f = searchResults.get(i);
       fill(255, 40);
-      rect(880, yPos, 290, 60, 5); 
+      noStroke();
+      rect(880, yPos, 290, 65, 8); 
+      
       fill(255);
-      textSize(12);
-      text(f.origin + " -> " + f.dest, 890, yPos + 25);
-      textSize(10);
+      textSize(13);
+      text(f.origin + " → " + f.dest, 895, yPos + 25);
+      textSize(11);
       fill(200);
-      text("Date: " + f.date, 890, yPos + 40);
-      text("Airline: " + f.airline, 890, yPos + 52);
+      text("DATE: " + f.date, 895, yPos + 45);
+      text("AIRLINE: " + f.airline, 980, yPos + 45);
     }
   }
+  noClip();
+  pop();
 }
 
 void mouseWheel(MouseEvent event) {
