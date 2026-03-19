@@ -1,3 +1,10 @@
+/*
+CHANGELOG:
+K. Ji, Impliaments SkyScanner style display for flights, 16:40, 19/03/2026
+T. Byrne, Gets compiling on path to port over OpenCSV usage, XX:XX, 19/03/2026
+
+*/
+
 ArrayList<Flight> allFlights=new ArrayList<Flight>();
 ArrayList<Flight> searchResults=new ArrayList<Flight>();
 
@@ -10,13 +17,53 @@ float targetOffset=0;
 float easing=0.15;
 
 void setup(){
+  String dataDir = findDataDir();
+
+  println("=== CSV Loading Performance Test ===\n");
+  println(String.format("%-20s %10s %12s", "File", "Rows", "Time (ms)"));
+  println("----------------------------------------------");
+
+  for (String file : DATA_FILES) {
+    String path = dataDir + file;
+    if (!new File(path).exists()) {
+      println(String.format("%-20s %10s %12s", file, "-", "NOT FOUND"));
+      continue;
+    }
+
+    long start = System.nanoTime();
+    ReadCSV csv = new ReadCSV(path);
+    long elapsed = (System.nanoTime() - start) / 1_000_000;
+
+    println(String.format("%-20s %,10d %,10d ms", file, csv.getFlights().size(), elapsed));
+  }
+
+  // sort and print using first available file
+  String firstPath = null;
+  for (String file : DATA_FILES) {
+    String path = dataDir + file;
+    if (new File(path).exists()) {
+      firstPath = path;
+      break;
+    }
+  }
+  //firstPath = dataDir + DATA_FILES[3]; // makes it use the largest for sorting, for testing mainly - allow user to change in future?
+
+  if (firstPath != null) {
+    ReadCSV csv = new ReadCSV(firstPath);
+    SortFlights sorter = new SortFlights();
+
+    List<Flight> flights = csv.getFlights();
+  }
+
   size(1200,800);
+  /*
   String[] lines=loadStrings("flights2k.csv"); 
   for(int i=1;i<lines.length;i++){
     if(lines[i].trim().length()>0){
       allFlights.add(new Flight(lines[i]));
     }
   }
+  */
 }
 
 void draw() {
@@ -123,6 +170,8 @@ void keyPressed() {
   }
 }
 
+
+// TODO: convert this to binary search
 void performSearch() {
   searchResults.clear();
   String sF = fromInput.toUpperCase().trim();
@@ -136,6 +185,7 @@ void performSearch() {
   }
 }
 
+/*
 class Flight {
   String date, airline, origin, dest;
   Flight(String line) {
@@ -147,4 +197,61 @@ class Flight {
       this.dest = cols[7].replaceAll("\"", "").trim();   
     }
   }
+}
+*/
+
+
+
+
+
+
+
+
+
+
+
+// carryovers from main.pde
+
+String findDataDir() {
+  if (new File(sketchPath("flight_tables")).exists())
+    return sketchPath("flight_tables") + "/";
+  if (new File(sketchPath("../flight_tables")).exists())
+    return sketchPath("../flight_tables") + "/";
+  println("Warning: could not find flight_tables directory");
+  return sketchPath("flight_tables") + "/";
+}
+
+int getLateMinutes(Flight f) {
+  if (f.arrTime == null || f.arrTime.isEmpty() || f.crsArrTime == null || f.crsArrTime.isEmpty()) return 0;
+  int actual = Integer.parseInt(f.arrTime.trim());
+  int sched = Integer.parseInt(f.crsArrTime.trim());
+  return ((actual / 100) * 60 + (actual % 100)) - ((sched / 100) * 60 + (sched % 100));
+}
+
+ArrayList<Airport> getAirports(List<Flight> flightList){
+  ArrayList<Airport> airports = new ArrayList<Airport>();
+  for (Flight f : flightList) {
+    String[] ap = {f.origin, f.dest};
+    String[] cities = {f.originCity, f.destCity};
+    for(int j = 0; j < ap.length; j++){
+      String a = ap[j];
+      int position = -1;
+      for(int i = 0; i < airports.size(); i++){
+        if(airports.get(i).aberviation.equals(a)){
+          position = i;
+          airports.get(i).flightCount++;
+          airports.get(i).cancelledOrDiverted += (Integer.parseInt(f.cancelled) + Integer.parseInt(f.diverted));
+        }
+      }
+      if(position == -1){
+        Airport newAirport = new Airport();
+        newAirport.aberviation = a;
+        newAirport.city = cities[j];
+        newAirport.flightCount = 1;
+        newAirport.cancelledOrDiverted = (Integer.parseInt(f.cancelled) + Integer.parseInt(f.diverted));
+        airports.add(newAirport);
+      }
+    }
+  }
+  return airports;
 }

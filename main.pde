@@ -9,6 +9,8 @@ T. Byrne, Adds least reliable airports, 17:05, 19/03/2026
 
 final String[] DATA_FILES = {"flights2k.csv", "flights10k.csv", "flights100k.csv", "flights_full.csv"};
 
+
+/* // Kept for reference, to be ported to FlightSearchSystem.pde
 void setup() {
   size(200, 200);
   String dataDir = findDataDir();
@@ -106,6 +108,7 @@ void setup() {
   exit();
 }
 
+
 String findDataDir() {
   if (new File(sketchPath("flight_tables")).exists())
     return sketchPath("flight_tables") + "/";
@@ -152,3 +155,4 @@ ArrayList<Airport> getAirports(List<Flight> flightList){
 
 void draw() {
 }
+*/
