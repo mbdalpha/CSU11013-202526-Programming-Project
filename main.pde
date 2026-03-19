@@ -2,6 +2,7 @@
 CHANGELOG:
 T. Byrne, Benchmarks ReadCSV loading across all flight CSV files for testing, 07:50, 19/03/2026
 T. Byrne, Uses SortFlights and displays the first 20 of each sort, 08:50, 19/03/2026
+T. Byrne, Adds busiest airports, 15:40, 19/03/2026
 
 */
 
@@ -83,6 +84,14 @@ void setup() {
     for (Flight f : sorter.sortByDestCity(flights, SortFlights.ASCENDING).subList(0, n)) {
       println(String.format("%-20s %-6s %-20s %-6s %s", f.destCity, f.dest, f.originCity, f.origin, f.flDate));
     }
+
+    List<Airport> busiest = sorter.sortByBusiest(flights, SortFlights.DESCENDING);
+    int airportCount = min(20, busiest.size());
+    println("\n=== Top 20 Busiest Airports (Descending) ===");
+    println(String.format("%-6s %-20s %s", "Code", "City", "Flights"));
+    for (Airport ap : busiest.subList(0, airportCount)) {
+      println(String.format("%-6s %-20s %d", ap.aberviation, ap.city, ap.flightCount));
+    }
   }
 
   println("\nDone.");
@@ -103,6 +112,32 @@ int getLateMinutes(Flight f) {
   int actual = Integer.parseInt(f.arrTime.trim());
   int sched = Integer.parseInt(f.crsArrTime.trim());
   return ((actual / 100) * 60 + (actual % 100)) - ((sched / 100) * 60 + (sched % 100));
+}
+
+ArrayList<Airport> getAirports(List<Flight> flightList){
+  ArrayList<Airport> airports = new ArrayList<Airport>();
+  for (Flight f : flightList) {
+    String[] ap = {f.origin, f.dest};
+    String[] cities = {f.originCity, f.destCity};
+    for(int j = 0; j < ap.length; j++){
+      String a = ap[j];
+      int position = -1;
+      for(int i = 0; i < airports.size(); i++){
+        if(airports.get(i).aberviation.equals(a)){
+          position = i;
+          airports.get(i).flightCount++;
+        }
+      }
+      if(position == -1){
+        Airport newAirport = new Airport();
+        newAirport.aberviation = a;
+        newAirport.city = cities[j];
+        newAirport.flightCount = 1;
+        airports.add(newAirport);
+      }
+    }
+  }
+  return airports;
 }
 
 void draw() {

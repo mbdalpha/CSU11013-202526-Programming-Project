@@ -1,6 +1,7 @@
 /*
 CHANGELOG:
 T. Byrne, Sorts flight lists by lateness, date, and airport, 08:50, 19/03/2026
+T. Byrne, Adds sorting by busyness for airports, 15:40, 19/03/2026
 
 */
 
@@ -76,6 +77,17 @@ class SortFlights {
       }
     });
     return sorted;
+  }
+
+  public List<Airport> sortByBusiest(List<Flight> flightList, boolean ascending) {
+    final int dir = ascending ? 1 : -1;
+    ArrayList<Airport> airports = getAirports(flightList);
+    Collections.sort(airports, new Comparator<Airport>() {
+      public int compare(Airport a, Airport b) {
+        return dir * (a.flightCount - b.flightCount);
+      }
+    });
+    return airports;
   }
 
   private int timeToMinutes(String time) {
