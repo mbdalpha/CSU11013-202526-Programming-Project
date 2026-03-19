@@ -1,6 +1,7 @@
 /*
 CHANGELOG:
 T. Byrne, Benchmarks ReadCSV loading across all flight CSV files for testing, 07:50, 19/03/2026
+T. Byrne, Uses SortFlights and displays the first 20 of each sort, 08:50, 19/03/2026
 
 */
 
@@ -28,6 +29,61 @@ void setup() {
     println(String.format("%-20s %,10d %,10d ms", file, csv.getFlights().size(), elapsed));
   }
 
+  // sort and print using first available file
+  String firstPath = null;
+  for (String file : DATA_FILES) {
+    String path = dataDir + file;
+    if (new File(path).exists()) {
+      firstPath = path;
+      break;
+    }
+  }
+
+  if (firstPath != null) {
+    ReadCSV csv = new ReadCSV(firstPath);
+    SortFlights sorter = new SortFlights();
+
+    List<Flight> flights = csv.getFlights();
+    int n = min(20, flights.size());
+
+    println("\n=== Top 20 Most Late (Descending) ===");
+    println(String.format("%-12s %-6s %-6s %-8s %-8s %s", "Date", "From", "To", "Sched", "Actual", "Late(min)"));
+    for (Flight f : sorter.latenessSort(flights, SortFlights.DESCENDING).subList(0, n)) {
+      int late = getLateMinutes(f);
+      println(String.format("%-12s %-6s %-6s %-8s %-8s %d", f.flDate, f.origin, f.dest, f.crsArrTime, f.arrTime, late));
+    }
+
+    println("\n=== Top 20 by Date (Ascending) ===");
+    println(String.format("%-12s %-6s %-6s %-10s %s", "Date", "From", "To", "Carrier", "Flight#"));
+    for (Flight f : sorter.dateSort(flights, SortFlights.ASCENDING).subList(0, n)) {
+      println(String.format("%-12s %-6s %-6s %-10s %s", f.flDate, f.origin, f.dest, f.carrier, f.flightNum));
+    }
+
+    println("\n=== Top 20 by Origin Code (Ascending) ===");
+    println(String.format("%-6s %-20s %-6s %-20s %s", "From", "City", "To", "City", "Date"));
+    for (Flight f : sorter.sortByOriginCode(flights, SortFlights.ASCENDING).subList(0, n)) {
+      println(String.format("%-6s %-20s %-6s %-20s %s", f.origin, f.originCity, f.dest, f.destCity, f.flDate));
+    }
+
+    println("\n=== Top 20 by Destination Code (Ascending) ===");
+    println(String.format("%-6s %-20s %-6s %-20s %s", "To", "City", "From", "City", "Date"));
+    for (Flight f : sorter.sortByDestCode(flights, SortFlights.ASCENDING).subList(0, n)) {
+      println(String.format("%-6s %-20s %-6s %-20s %s", f.dest, f.destCity, f.origin, f.originCity, f.flDate));
+    }
+
+    println("\n=== Top 20 by Origin City (Ascending) ===");
+    println(String.format("%-20s %-6s %-20s %-6s %s", "Origin City", "Code", "Dest City", "Code", "Date"));
+    for (Flight f : sorter.sortByOriginCity(flights, SortFlights.ASCENDING).subList(0, n)) {
+      println(String.format("%-20s %-6s %-20s %-6s %s", f.originCity, f.origin, f.destCity, f.dest, f.flDate));
+    }
+
+    println("\n=== Top 20 by Destination City (Ascending) ===");
+    println(String.format("%-20s %-6s %-20s %-6s %s", "Dest City", "Code", "Origin City", "Code", "Date"));
+    for (Flight f : sorter.sortByDestCity(flights, SortFlights.ASCENDING).subList(0, n)) {
+      println(String.format("%-20s %-6s %-20s %-6s %s", f.destCity, f.dest, f.originCity, f.origin, f.flDate));
+    }
+  }
+
   println("\nDone.");
   exit();
 }
@@ -39,6 +95,13 @@ String findDataDir() {
     return sketchPath("../flight_tables") + "/";
   println("Warning: could not find flight_tables directory");
   return sketchPath("flight_tables") + "/";
+}
+
+int getLateMinutes(Flight f) {
+  if (f.arrTime == null || f.arrTime.isEmpty() || f.crsArrTime == null || f.crsArrTime.isEmpty()) return 0;
+  int actual = Integer.parseInt(f.arrTime.trim());
+  int sched = Integer.parseInt(f.crsArrTime.trim());
+  return ((actual / 100) * 60 + (actual % 100)) - ((sched / 100) * 60 + (sched % 100));
 }
 
 void draw() {
