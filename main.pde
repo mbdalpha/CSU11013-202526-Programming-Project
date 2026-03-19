@@ -38,6 +38,7 @@ void setup() {
       break;
     }
   }
+  //firstPath = dataDir + DATA_FILES[3]; // makes it use the largest for sorting, for testing mainly
 
   if (firstPath != null) {
     ReadCSV csv = new ReadCSV(firstPath);
