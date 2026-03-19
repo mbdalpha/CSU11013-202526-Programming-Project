@@ -3,6 +3,7 @@ CHANGELOG:
 T. Byrne, Benchmarks ReadCSV loading across all flight CSV files for testing, 07:50, 19/03/2026
 T. Byrne, Uses SortFlights and displays the first 20 of each sort, 08:50, 19/03/2026
 T. Byrne, Adds busiest airports, 15:40, 19/03/2026
+T. Byrne, Adds least reliable airports, 17:05, 19/03/2026
 
 */
 
@@ -92,6 +93,13 @@ void setup() {
     for (Airport ap : busiest.subList(0, airportCount)) {
       println(String.format("%-6s %-20s %d", ap.aberviation, ap.city, ap.flightCount));
     }
+    List<Airport> leastReliable = sorter.sortByReliability(flights, SortFlights.DESCENDING);
+    int airportCount1 = min(20, leastReliable.size());
+    println("\n=== Top 20 Least Reliable Airports (Descending) ===");
+    println(String.format("%-6s %-20s %s", "Code", "City", "Cancellations or Diversions"));
+    for (Airport ap : leastReliable.subList(0, airportCount1)) {
+      println(String.format("%-6s %-20s %d", ap.aberviation, ap.city, ap.cancelledOrDiverted));
+    }
   }
 
   println("\nDone.");
@@ -126,6 +134,7 @@ ArrayList<Airport> getAirports(List<Flight> flightList){
         if(airports.get(i).aberviation.equals(a)){
           position = i;
           airports.get(i).flightCount++;
+          airports.get(i).cancelledOrDiverted += (Integer.parseInt(f.cancelled) + Integer.parseInt(f.diverted));
         }
       }
       if(position == -1){
@@ -133,6 +142,7 @@ ArrayList<Airport> getAirports(List<Flight> flightList){
         newAirport.aberviation = a;
         newAirport.city = cities[j];
         newAirport.flightCount = 1;
+        newAirport.cancelledOrDiverted = (Integer.parseInt(f.cancelled) + Integer.parseInt(f.diverted));
         airports.add(newAirport);
       }
     }
