@@ -2,6 +2,7 @@
 CHANGELOG:
 T. Byrne, Sorts flight lists by lateness, date, and airport, 08:50, 19/03/2026
 T. Byrne, Adds sorting by busyness for airports, 15:40, 19/03/2026
+T. Byrne, Refactors code to reduce repetition, 15:50, 19/03/2026
 
 */
 
@@ -13,70 +14,51 @@ class SortFlights {
   public static final boolean ASCENDING = true;
   public static final boolean DESCENDING = false;
 
-  public List<Flight> latenessSort(List<Flight> flightList, boolean ascending) {
+  private List<Flight> sortBy(List<Flight> flightList, boolean ascending, Comparator<Flight> comp) {
     final int dir = ascending ? 1 : -1;
     List<Flight> sorted = new ArrayList<Flight>(flightList);
     Collections.sort(sorted, new Comparator<Flight>() {
       public int compare(Flight a, Flight b) {
-        return dir * (getLateness(a) - getLateness(b));
+        return dir * comp.compare(a, b);
       }
     });
     return sorted;
+  }
+
+  public List<Flight> latenessSort(List<Flight> flightList, boolean ascending) {
+    return sortBy(flightList, ascending, new Comparator<Flight>() {
+      public int compare(Flight a, Flight b) { return getLateness(a) - getLateness(b); }
+    });
   }
 
   public List<Flight> dateSort(List<Flight> flightList, boolean ascending) {
-    final int dir = ascending ? 1 : -1;
-    List<Flight> sorted = new ArrayList<Flight>(flightList);
-    Collections.sort(sorted, new Comparator<Flight>() {
-      public int compare(Flight a, Flight b) {
-        return dir * a.flDate.compareTo(b.flDate);
-      }
+    return sortBy(flightList, ascending, new Comparator<Flight>() {
+      public int compare(Flight a, Flight b) { return a.flDate.compareTo(b.flDate); }
     });
-    return sorted;
   }
 
   public List<Flight> sortByOriginCode(List<Flight> flightList, boolean ascending) {
-    final int dir = ascending ? 1 : -1;
-    List<Flight> sorted = new ArrayList<Flight>(flightList);
-    Collections.sort(sorted, new Comparator<Flight>() {
-      public int compare(Flight a, Flight b) {
-        return dir * a.origin.compareTo(b.origin);
-      }
+    return sortBy(flightList, ascending, new Comparator<Flight>() {
+      public int compare(Flight a, Flight b) { return a.origin.compareTo(b.origin); }
     });
-    return sorted;
   }
 
   public List<Flight> sortByDestCode(List<Flight> flightList, boolean ascending) {
-    final int dir = ascending ? 1 : -1;
-    List<Flight> sorted = new ArrayList<Flight>(flightList);
-    Collections.sort(sorted, new Comparator<Flight>() {
-      public int compare(Flight a, Flight b) {
-        return dir * a.dest.compareTo(b.dest);
-      }
+    return sortBy(flightList, ascending, new Comparator<Flight>() {
+      public int compare(Flight a, Flight b) { return a.dest.compareTo(b.dest); }
     });
-    return sorted;
   }
 
   public List<Flight> sortByOriginCity(List<Flight> flightList, boolean ascending) {
-    final int dir = ascending ? 1 : -1;
-    List<Flight> sorted = new ArrayList<Flight>(flightList);
-    Collections.sort(sorted, new Comparator<Flight>() {
-      public int compare(Flight a, Flight b) {
-        return dir * a.originCity.compareTo(b.originCity);
-      }
+    return sortBy(flightList, ascending, new Comparator<Flight>() {
+      public int compare(Flight a, Flight b) { return a.originCity.compareTo(b.originCity); }
     });
-    return sorted;
   }
 
   public List<Flight> sortByDestCity(List<Flight> flightList, boolean ascending) {
-    final int dir = ascending ? 1 : -1;
-    List<Flight> sorted = new ArrayList<Flight>(flightList);
-    Collections.sort(sorted, new Comparator<Flight>() {
-      public int compare(Flight a, Flight b) {
-        return dir * a.destCity.compareTo(b.destCity);
-      }
+    return sortBy(flightList, ascending, new Comparator<Flight>() {
+      public int compare(Flight a, Flight b) { return a.destCity.compareTo(b.destCity); }
     });
-    return sorted;
   }
 
   public List<Airport> sortByBusiest(List<Flight> flightList, boolean ascending) {
