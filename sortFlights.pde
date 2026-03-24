@@ -78,7 +78,7 @@ class SortFlights {
     ArrayList<Airport> airports = getAirports(flightList);
     Collections.sort(airports, new Comparator<Airport>() {
       public int compare(Airport a, Airport b) {
-        return dir * (a.cancelledOrDiverted - b.canceledOrDiverted);
+        return dir * (a.cancelledOrDiverted - b.cancelledOrDiverted);
       }
     });
     return airports;
