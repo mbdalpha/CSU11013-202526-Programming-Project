@@ -1,15 +1,20 @@
 Widget[] widgets = new Widget[31];
 String from = "from: ";
-String to = "to: ";
+String too = "to: "; //I called it too because to didn't work for some reason
 boolean fromSelected = false;
 boolean toSelected = false;
 
-int cols = 7;
-int cellW = 90;
-int cellH = 70;
-int startX = 20;
-int startY = 80;
+float cellW = 90;
+float cellH = 70;
+float startX = 20;
+float startY = 80;
 
+float fromX = 50;
+float fromY = 30;
+float toX = 400;
+float toY = 30;
+
+int cols = 7;
 int dayOffset = 6;
 
 void setup() {
@@ -35,8 +40,8 @@ void draw() {
   for (int i = 0; i < 31; i++) {
     widgets[i].draw();
   }
-  text(from, 50, 30);
-  text(to, 400, 30);
+  text(from, fromX, fromY);
+  text(too, toX, toY);
 }
 
 void mousePressed() {
@@ -57,7 +62,7 @@ void mousePressed() {
           mouseX < widgets[i].x + widgets[i].w &&
           mouseY > widgets[i].y &&
           mouseY < widgets[i].y + widgets[i].h) {
-            to = to + widgets[i].getDate() + "/01/2022";
+            too = too + widgets[i].getDate() + "/01/2022";
             toSelected = true;
           }
       }
