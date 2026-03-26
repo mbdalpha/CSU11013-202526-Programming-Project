@@ -1,8 +1,8 @@
 class Widget {
-  int x, y, w, h;
+  float x, y, w, h;
   int date;
   
-  Widget(int x, int y, int w, int h, int date) {
+  Widget(float x, float y, float w, float h, int date) {
     this.x = x;
     this.y = y;
     this.w = w;
