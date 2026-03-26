@@ -27,8 +27,8 @@ void setup() {
     int col = gridIndex % cols;
     int row = gridIndex / cols;
     
-    int x = startX + col * cellW;
-    int y = startY + row * cellH;
+    float x = startX + col * cellW;
+    float y = startY + row * cellH;
     
     widgets[i] = new Widget(x, y, cellW - 15, cellH - 15, date);
   }
