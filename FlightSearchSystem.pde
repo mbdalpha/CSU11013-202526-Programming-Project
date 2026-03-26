@@ -1,26 +1,63 @@
-ArrayList<Flight> allFlights=new ArrayList<Flight>();
-ArrayList<Flight> searchResults=new ArrayList<Flight>();
+import java.util.HashMap;
 
-String fromInput="";
-String toInput="";
-int activeBox=0; 
-boolean showResults=false;
-float scrollOffset=0; 
-float targetOffset=0;
-float easing=0.15;
+ArrayList<Flight> allFlights = new ArrayList<Flight>();
+ArrayList<Flight> searchResults = new ArrayList<Flight>();
+HashMap<String, PVector> airportCoords = new HashMap<String, PVector>(); 
 
-void setup(){
-  size(1200,800);
-  String[] lines=loadStrings("flights2k.csv"); 
-  for(int i=1;i<lines.length;i++){
-    if(lines[i].trim().length()>0){
+String fromInput = "";
+String toInput = "";
+int activeBox = 0; 
+boolean showResults = false;
+float scrollOffset = 0, targetOffset = 0, easing = 0.15;
+
+Flight selectedFlight = null; 
+PImage american_Map;
+HashMap<String, PImage> logos = new HashMap<String, PImage>();
+
+void setup() {
+  size(1200, 800);
+  american_Map = loadImage("American Map.png");
+  
+  String[] airlineCodes = {"AA", "UA", "DL", "F9", "AS", "B6", "G4", "HA", "NK", "WN"}; 
+  for (String code : airlineCodes) {
+    logos.put(code, loadImage(code + ".png")); 
+  }
+  
+  loadAirportLocations();
+  
+  String[] lines = loadStrings("flights_full.csv"); 
+  for (int i = 1; i < lines.length; i++) {
+    if (lines[i].trim().length() > 0) {
       allFlights.add(new Flight(lines[i]));
+    }
+  }
+}
+
+void loadAirportLocations() {
+  String[] lines = loadStrings("airports_location.csv");
+  for (int i = 1; i < lines.length; i++) {
+    String[] cols = lines[i].split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+    
+    if (cols.length >17) {
+      String code = cols[0].replaceAll("\"", "").trim();
+      float x = float(cols[17].trim());            
+      float y = float(cols[10].trim());  
+      
+      airportCoords.put(code, new PVector(x, y));
     }
   }
 }
 
 void draw() {
   background(10, 25, 45); 
+  
+  if (american_Map != null) {
+    image(american_Map, 20, 130, 830, 549.6);
+  }
+  
+  if (selectedFlight != null) {
+    drawConnection(selectedFlight);
+  }
   
   float dx=targetOffset-scrollOffset;
   scrollOffset+=dx*easing;
@@ -53,8 +90,30 @@ void drawHeaderSearch() {
   textAlign(LEFT, BASELINE);
 }
 
+void drawConnection(Flight f) {
+  PVector start = airportCoords.get(f.origin);
+  PVector end = airportCoords.get(f.dest);
+  
+  if (start != null && end != null) {
+    stroke(100, 200, 255, 150);
+    strokeWeight(3);
+    line(start.x, start.y, end.x, end.y);
+    
+    noStroke();
+    fill(0, 214, 206); 
+    ellipse(start.x, start.y, 10, 10);
+    fill(255, 161, 0); 
+    ellipse(end.x, end.y, 10, 10);
+    
+    fill(255);
+    textSize(14);
+    text(f.origin, start.x + 12, start.y);
+    text(f.dest, end.x + 12, end.y);
+  }
+}
+
 void drawResultsPanel() {
-  fill(255, 15); 
+  fill(255, 25); 
   rect(870, 130, 310, 640, 10);
   fill(255);
   textSize(16);
@@ -78,7 +137,15 @@ void drawResultsPanel() {
       textSize(11);
       fill(200);
       text("DATE: " + f.date, 895, yPos + 45);
-      text("AIRLINE: " + f.airline, 980, yPos + 45);
+      text("AIRLINE: " + f.airline, 1050, yPos + 45);
+      
+      PImage logoImg = logos.get(f.airline);
+      if (logoImg != null) {
+        image(logoImg, 1120, yPos + 12, 40, 40); 
+      } else {
+        fill(255, 100);
+        text(f.airline, 1120, yPos + 35);
+      }
     }
   }
   noClip();
@@ -128,11 +195,15 @@ void performSearch() {
   String sF = fromInput.toUpperCase().trim();
   String sT = toInput.toUpperCase().trim();
   for (Flight f : allFlights) {
-    boolean matchF = sF.isEmpty() || f.origin.contains(sF);
-    boolean matchT = sT.isEmpty() || f.dest.contains(sT);
-    if (matchF && matchT && !(sF.isEmpty() && sT.isEmpty())) {
-      searchResults.add(f);
-    }
+    boolean mF = sF.isEmpty() || f.origin.contains(sF);
+    boolean mT = sT.isEmpty() || f.dest.contains(sT);
+    if (mF && mT && !(sF.isEmpty() && sT.isEmpty())) searchResults.add(f);
+  }
+  
+  if (searchResults.size() > 0) {
+    selectedFlight = searchResults.get(0);
+  } else {
+    selectedFlight = null;
   }
 }
 
