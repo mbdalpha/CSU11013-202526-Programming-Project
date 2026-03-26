@@ -4,6 +4,7 @@ T. Byrne, Sorts flight lists by lateness, date, and airport, 08:50, 19/03/2026
 T. Byrne, Adds sorting by busyness for airports, 15:40, 19/03/2026
 T. Byrne, Refactors code to reduce repetition, 15:50, 19/03/2026
 T. Byrne, Adds least reliable airports, 17:05, 19/03/2026
+T. Byrne, Adds date range search function, 11:00, 26/03/2026
 
 */
 
@@ -60,6 +61,38 @@ class SortFlights {
     return sortBy(flightList, ascending, new Comparator<Flight>() {
       public int compare(Flight a, Flight b) { return a.destCity.compareTo(b.destCity); }
     });
+  }
+
+
+  // returns list of specified dates sorted by date, else returns full list sorted by date
+  public List<Flight> getDateRange(List<Flight> flightList, boolean ascending, int startDate, int endDate) {
+    int startIdx = -1;
+    int endIdx = -1;
+    List<Flight> fl = dateSort(flightList, ascending);
+
+    int i = 0;
+    String dateString = (startDate<10) ? ("0" + startDate) : ("" + startDate);
+    while(i<fl.size() && startIdx == -1){
+      if(fl.get(i).flDate.equals("01/" + dateString + "/2022")){
+        startIdx = i;
+      }
+      i++;
+    }
+
+    i = 0;
+    dateString = (endDate<10) ? ("0" + endDate) : ("" + endDate);
+    while(i<fl.size() && endIdx == -1){
+      if(fl.get(i).flDate.equals("01/" + dateString + "/2022")){
+        endIdx = i;
+      }
+      i++;
+    }
+
+    if(startIdx != -1 && endIdx != -1){
+      return fl.subList(startIdx, endIdx);
+    } else {
+      return fl;
+    }
   }
 
   public List<Airport> sortByBusiest(List<Flight> flightList, boolean ascending) {
