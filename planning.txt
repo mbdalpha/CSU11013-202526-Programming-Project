@@ -8,7 +8,7 @@ T. Byrne, Initialises repo and adds planning.txt, outlining spec and a few ideas
 # Specification
 - Read CSV file of flights, render it, and allow user to interact with it
 - Exact layout of CSV can be found in the spec sheet, notibly fields may be empty
-- 600k entries is the maximum expected
+- 537k entries is the maximum expected
 
 ## Code structure
 - Turn from CSV -> classes
