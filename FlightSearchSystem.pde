@@ -54,6 +54,21 @@ void loadAirportLocations() {
   }
 }
 
+void loadAirportLocations() {
+  String[] lines = loadStrings("airports_location.csv");
+  for (int i = 1; i < lines.length; i++) {
+    String[] cols = lines[i].split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+    
+    if (cols.length >17) {
+      String code = cols[0].replaceAll("\"", "").trim();
+      float x = float(cols[17].trim());            
+      float y = float(cols[10].trim());  
+      
+      airportCoords.put(code, new PVector(x, y));
+    }
+  }
+}
+
 void draw() {
   background(10, 25, 45); 
   
