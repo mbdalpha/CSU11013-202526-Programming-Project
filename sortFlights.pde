@@ -6,6 +6,7 @@ T. Byrne, Refactors code to reduce repetition, 15:50, 19/03/2026
 T. Byrne, Adds least reliable airports, 17:05, 19/03/2026
 T. Byrne, Adds date range search function, 11:00, 26/03/2026
 T. Byrne, Adds blueprint for airport search function (currently unfuctional), 17:00, 26/03/2026
+T. Byrne, Finishes airport search function, using simpiler approach, 15:40, 27/03/2026
 
 */
 
@@ -96,56 +97,14 @@ class SortFlights {
     }
   }
 
-  public List<Flight> getFlightRange(List<Flight> flightList, boolean ascending, string airportCode) {
-    int startIdx = -1;
-    int endIdx = -1;
-    List<Flight> fl = sortByOriginCode(flightList, ascending);
-
-    int i = Collections.binarySearch(fl.origin, airportCode);
-    while(i<fl.size() && startIdx == -1){
-      if(!(fl.get(i).flDate.equals(airportCode))){
-        startIdx = (i+1);
+  public List<Flight> getFlightRange(List<Flight> flightList, String airportCode) {
+    List<Flight> flightRange = new ArrayList<Flight>();
+    for(int i = 0; (i<flightList.size()); i++){
+      if(flightList.get(i).origin.equals(airportCode)||flightList.get(i).dest.equals(airportCode)){
+        flightRange.add(flightList.get(i));
       }
-      i--;
     }
-
-    while(i<fl.size() && endIdx == -1){
-      if(!(fl.get(i).flDate.equals(airportCode))){
-        endIdx = i;
-      }
-      i++;
-    }
-
-    if(startIdx != -1 && endIdx != -1){
-      List<flight> outgoingFlights = fl.subList(startIdx, endIdx);
-    } else {
-      return fl;
-    }
-
-    startIdx = -1;
-    endIdx = -1;
-    List<Flight> fl0 = sortByDestCode(flightList, ascending);
-
-    int i = 0;
-    while(i<fl.size() && startIdx == -1){
-      if(fl.get(i).flDate.equals(airportCode)){
-        startIdx = i;
-      }
-      i++;
-    }
-
-    while(i<fl.size() && endIdx == -1){
-      if(!(fl.get(i).flDate.equals(airportCode))){
-        endIdx = i;
-      }
-      i++;
-    }
-
-    if(startIdx != -1 && endIdx != -1){
-      List<flight> outgoingFlights = fl.subList(startIdx, endIdx);
-    } else {
-      return fl;
-    }
+    return(flightRange);
   }
 
 
