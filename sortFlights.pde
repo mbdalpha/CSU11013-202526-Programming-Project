@@ -5,6 +5,8 @@ T. Byrne, Adds sorting by busyness for airports, 15:40, 19/03/2026
 T. Byrne, Refactors code to reduce repetition, 15:50, 19/03/2026
 T. Byrne, Adds least reliable airports, 17:05, 19/03/2026
 T. Byrne, Adds date range search function, 11:00, 26/03/2026
+T. Byrne, Adds blueprint for airport search function (currently unfuctional), 17:00, 26/03/2026
+T. Byrne, Finishes airport search function, using simpiler approach, 15:40, 27/03/2026
 
 */
 
@@ -94,6 +96,17 @@ class SortFlights {
       return fl;
     }
   }
+
+  public List<Flight> getFlightRange(List<Flight> flightList, String airportCode) {
+    List<Flight> flightRange = new ArrayList<Flight>();
+    for(int i = 0; (i<flightList.size()); i++){
+      if(flightList.get(i).origin.equals(airportCode)||flightList.get(i).dest.equals(airportCode)){
+        flightRange.add(flightList.get(i));
+      }
+    }
+    return(flightRange);
+  }
+
 
   public List<Airport> sortByBusiest(List<Flight> flightList, boolean ascending) {
     final int dir = ascending ? 1 : -1;
