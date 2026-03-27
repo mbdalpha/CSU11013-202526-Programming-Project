@@ -1,4 +1,12 @@
+/*
+CHANGELOG:
+K. Ji, Created FlightSearchSystem [further details need to be added by him], XX:XX, XX/XX/2026
+T. Byrne, Ports FSS to use the Kryo system. In this process, main was renamed to FlightDataHelper, its proformance testing logic was removed, and was made into a class, 15:40, 25/03/2026
+
+*/
+
 import java.util.HashMap;
+import java.util.List;
 
 ArrayList<Flight> allFlights = new ArrayList<Flight>();
 ArrayList<Flight> searchResults = new ArrayList<Flight>();
@@ -16,21 +24,19 @@ HashMap<String, PImage> logos = new HashMap<String, PImage>();
 
 void setup() {
   size(1200, 800);
-  american_Map = loadImage("American Map.png");
+  american_Map = loadImage("images/American Map.png");
   
   String[] airlineCodes = {"AA", "UA", "DL", "F9", "AS", "B6", "G4", "HA", "NK", "WN"}; 
   for (String code : airlineCodes) {
-    logos.put(code, loadImage(code + ".png")); 
+    logos.put(code, loadImage("images/" + code + ".png"));
   }
   
   loadAirportLocations();
   
-  String[] lines = loadStrings("flights_full.csv"); 
-  for (int i = 1; i < lines.length; i++) {
-    if (lines[i].trim().length() > 0) {
-      allFlights.add(new Flight(lines[i]));
-    }
-  }
+  FlightDataHelper helper = new FlightDataHelper();
+  String dataDir = helper.findDataDir();
+  ReadCSV csv = new ReadCSV(dataDir + "flights_full.csv");
+  allFlights = new ArrayList<Flight>(csv.getFlights());
 }
 
 void loadAirportLocations() {
@@ -136,15 +142,15 @@ void drawResultsPanel() {
       text(f.origin + " → " + f.dest, 895, yPos + 25);
       textSize(11);
       fill(200);
-      text("DATE: " + f.date, 895, yPos + 45);
-      text("AIRLINE: " + f.airline, 1050, yPos + 45);
-      
-      PImage logoImg = logos.get(f.airline);
+      text("DATE: " + f.flDate, 895, yPos + 45);
+      text("AIRLINE: " + f.carrier, 1050, yPos + 45);
+
+      PImage logoImg = logos.get(f.carrier);
       if (logoImg != null) {
-        image(logoImg, 1120, yPos + 12, 40, 40); 
+        image(logoImg, 1120, yPos + 12, 40, 40);
       } else {
         fill(255, 100);
-        text(f.airline, 1120, yPos + 35);
+        text(f.carrier, 1120, yPos + 35);
       }
     }
   }
@@ -204,18 +210,5 @@ void performSearch() {
     selectedFlight = searchResults.get(0);
   } else {
     selectedFlight = null;
-  }
-}
-
-class Flight {
-  String date, airline, origin, dest;
-  Flight(String line) {
-    String[] cols = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-    if (cols.length >= 8) {
-      this.date = cols[0].trim();   
-      this.airline = cols[1].trim(); 
-      this.origin = cols[3].replaceAll("\"", "").trim(); 
-      this.dest = cols[7].replaceAll("\"", "").trim();   
-    }
   }
 }
