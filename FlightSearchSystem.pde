@@ -28,7 +28,7 @@ void setup() {
   
   String[] airlineCodes = {"AA", "UA", "DL", "F9", "AS", "B6", "G4", "HA", "NK", "WN"}; 
   for (String code : airlineCodes) {
-    logos.put(code, loadImage("images/"code + ".png")); 
+    logos.put(code, loadImage("images/" + code + ".png"));
   }
   
   loadAirportLocations();
@@ -212,4 +212,3 @@ void performSearch() {
     selectedFlight = null;
   }
 }
-
