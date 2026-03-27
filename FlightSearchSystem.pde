@@ -24,11 +24,11 @@ HashMap<String, PImage> logos = new HashMap<String, PImage>();
 
 void setup() {
   size(1200, 800);
-  american_Map = loadImage("American Map.png");
+  american_Map = loadImage("images/American Map.png");
   
   String[] airlineCodes = {"AA", "UA", "DL", "F9", "AS", "B6", "G4", "HA", "NK", "WN"}; 
   for (String code : airlineCodes) {
-    logos.put(code, loadImage(code + ".png")); 
+    logos.put(code, loadImage("images/" + code + ".png"));
   }
   
   loadAirportLocations();
@@ -212,4 +212,3 @@ void performSearch() {
     selectedFlight = null;
   }
 }
-
