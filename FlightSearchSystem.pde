@@ -2,50 +2,73 @@ import java.util.HashMap;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-ArrayList<Flight> allFlights = new ArrayList<Flight>();
-ArrayList<Flight> searchResults = new ArrayList<Flight>();
-HashMap<String, PVector> airportCoords = new HashMap<String, PVector>();
+ArrayList<Flight> allFlights=new ArrayList<Flight>();
+ArrayList<Flight> searchResults=new ArrayList<Flight>();
+HashMap<String, PVector> airportCoords=new HashMap<String, PVector>();
 
-String fromInput = "";
-String toInput = "";
-String startDateInput = "";
-String endDateInput = "";
+String fromInput="";
+String toInput="";
+String startDateInput="";
+String endDateInput="";
 
-int activeBox = 0;  
-boolean showResults = false;
-float scrollOffset = 0, targetOffset = 0, easing = 0.15;
+int activeBox=0;
+boolean showResults=false;
+float scrollOffset=0,targetOffset=0,easing=0.15;
 
-Flight selectedFlight = null;
+Flight selectedFlight=null;
 PImage american_Map;
-HashMap<String, PImage> logos = new HashMap<String, PImage>();
+HashMap<String, PImage>logos=new HashMap<String, PImage>();
 
-boolean showCalendar = false;
-int calendarTargetBox = 0;   // 3=start date, 4=end date
-int calendarX = 390;
-int calendarY = 140;
-int calendarW = 430;
-int calendarH = 295;
+boolean showCalendar=false;
+int calendarTargetBox=0;   // 3=start date, 4=end date
+int calendarX=390;
+int calendarY=140;
+int calendarW=430;
+int calendarH=295;
 
-boolean useIATAMode = true;
+boolean useIATAMode=true;
 
-SimpleDateFormat flightFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-SimpleDateFormat selectedDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+boolean draggingScrollbar=false;
+float scrollbarDragOffset=0;
+
+int resultsPanelX=870;
+int resultsPanelY=130;
+int resultsPanelW=310;
+int resultsPanelH=640;
+
+int resultsClipX=870;
+int resultsClipY=170;
+int resultsClipW=310;
+int resultsClipH=580;
+
+int resultCardX=880;
+int resultCardW=290;
+int resultCardH=72;
+int resultStepY=82;
+
+int scrollbarX=1172;
+int scrollbarY=170;
+int scrollbarW=6;
+int scrollbarH=580;
+
+SimpleDateFormat flightFormat=new SimpleDateFormat("MM/dd/yyyy HH:mm");
+SimpleDateFormat selectedDateFormat=new SimpleDateFormat("MM/dd/yyyy");
 
 void setup() {
-  size(1200, 800);
+  size(1200,800);
 
-  american_Map = loadImage("American Map.png");
+  american_Map=loadImage("American Map.png");
 
-  String[] airlineCodes = {"AA", "UA", "DL", "F9", "AS", "B6", "G4", "HA", "NK", "WN"};
-  for (String code : airlineCodes) {
-    logos.put(code, loadImage(code + ".png"));
+  String[] airlineCodes={"AA","UA","DL","F9","AS","B6","G4","HA","NK","WN"};
+  for (String code:airlineCodes){
+    logos.put(code,loadImage(code +".png"));
   }
 
   loadAirportLocations();
 
-  String[] lines = loadStrings("flights_full.csv");
-  for (int i = 1; i < lines.length; i++) {
-    if (lines[i].trim().length() > 0) {
+  String[] lines=loadStrings("flights_full.csv");
+  for (int i=1;i<lines.length;i++){
+    if (lines[i].trim().length()>0){
       allFlights.add(new Flight(lines[i]));
     }
   }
@@ -54,73 +77,77 @@ void setup() {
   selectedDateFormat.setLenient(false);
 }
 
-void draw() {
-  background(10, 25, 45);
+void draw(){
+  background(10,25,45);
 
-  if (american_Map != null) {
-    image(american_Map, 20, 130, 830, 549.6);
+  if (american_Map!=null){
+    image(american_Map,20,130,830,549.6);
   }
 
-  if (selectedFlight != null) {
+  if (selectedFlight!=null){
     drawConnection(selectedFlight);
   }
 
-  float dx = targetOffset - scrollOffset;
-  scrollOffset += dx * easing;
+  float dx=targetOffset-scrollOffset;
+  scrollOffset+=dx*easing;
 
   drawHeaderSearch();
 
-  if (showResults) {
+  if (showResults){
     drawResultsPanel();
   }
 
-  if (showCalendar) {
+  if (selectedFlight!=null){
+    drawFlightDetailsPanel(selectedFlight);
+  }
+
+  if (showCalendar){
     drawCalendarPopup();
   }
 }
 
-void loadAirportLocations() {
-  String[] lines = loadStrings("airports_location.csv");
-  for (int i = 1; i < lines.length; i++) {
-    String[] cols = lines[i].split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-    if (cols.length > 17) {
-      String code = cols[0].replaceAll("\"", "").trim();
-      float x = float(cols[17].trim());
-      float y = float(cols[10].trim());
-      airportCoords.put(code, new PVector(x, y));
+void loadAirportLocations(){
+  String[] lines=loadStrings("airports_location.csv");
+  for (int i=1; i<lines.length;i++){
+    String[] cols=lines[i].split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+    if (cols.length>17){
+      String code=cols[0].replaceAll("\"","").trim();
+      float x=float(cols[17].trim());
+      float y=float(cols[10].trim());
+      airportCoords.put(code,new PVector(x,y));
     }
   }
 }
 
-void drawHeaderSearch() {
+void drawHeaderSearch(){
   fill(255);
   noStroke();
-  rect(30, 40, 820, 70, 10);
+  rect(30,40,820,70,10);
 
   stroke(220);
-  line(220, 50, 220, 100);
-  line(410, 50, 410, 100);
-  line(620, 50, 620, 100);
+  line(220,50,220,100);
+  line(410,50,410,100);
+  line(620,50,620,100);
 
   fill(100);
   textSize(12);
 
-  if (useIATAMode) {
-    text("From (Origin)", 50, 60);
-    text("To (Dest)", 240, 60);
-  } else {
-    text("From City", 50, 60);
-    text("To City", 240, 60);
+  if (useIATAMode){
+    text("From (Origin)",50,60);
+    text("To (Dest)",240,60);
+  }else{
+    text("From City",50,60);
+    text("To City",240,60);
   }
 
-  text("Start Date", 430, 60);
-  text("End Date", 640, 60);
+  text("Start Date",430,60);
+  text("End Date",640,60);
 
   fill(0);
   textSize(18);
 
-  text(fromInput + (activeBox == 1 ? "|" : ""), 50, 90);
-  text(toInput + (activeBox == 2 ? "|" : ""), 240, 90);
+  text(fromInput+(activeBox==1?"|":""),50,90);
+  text(toInput+(activeBox==2?"|" : ""),240,90);
 
   if (startDateInput.equals("")) {
     fill(140);
@@ -191,24 +218,24 @@ void drawConnection(Flight f) {
 
 void drawResultsPanel() {
   fill(255, 25);
-  rect(870, 130, 310, 640, 10);
+  rect(resultsPanelX, resultsPanelY, resultsPanelW, resultsPanelH, 10);
 
   fill(255);
   textSize(16);
   text("Results: " + searchResults.size(), 880, 160);
 
   push();
-  clip(870, 170, 310, 580);
+  clip(resultsClipX, resultsClipY, resultsClipW, resultsClipH);
 
   for (int i = 0; i < searchResults.size(); i++) {
-    float yPos = 170 + (i * 82) + scrollOffset;
+    float yPos = resultsClipY + (i * resultStepY) + scrollOffset;
 
     if (yPos > 100 && yPos < 780) {
       Flight f = searchResults.get(i);
 
       fill(255, 40);
       noStroke();
-      rect(880, yPos, 290, 72, 8);
+      rect(resultCardX, yPos, resultCardW, resultCardH, 8);
 
       fill(255);
       textSize(13);
@@ -217,7 +244,7 @@ void drawResultsPanel() {
       textSize(10);
       fill(200);
       text(f.originCity + " → " + f.destCity, 895, yPos + 38);
-      text("DATE: " + f.date, 895, yPos + 53);
+      text("DATE: " + f.flDate, 895, yPos + 53);
       text("AIRLINE: " + f.airline, 895, yPos + 67);
 
       PImage logoImg = logos.get(f.airline);
@@ -232,6 +259,70 @@ void drawResultsPanel() {
 
   noClip();
   pop();
+
+  drawScrollbar();
+}
+
+void drawScrollbar() {
+  noStroke();
+
+  fill(255, 35);
+  rect(scrollbarX, scrollbarY, scrollbarW, scrollbarH, 4);
+
+  float thumbH = getScrollbarThumbHeight();
+  float thumbY = getScrollbarThumbY();
+
+  if (getMaxScroll() == 0) {
+    fill(255, 70);
+  } else if (draggingScrollbar) {
+    fill(255, 180);
+  } else {
+    fill(255, 130);
+  }
+
+  rect(scrollbarX, thumbY, scrollbarW, thumbH, 4);
+}
+
+void drawFlightDetailsPanel(Flight f) {
+  int panelX = 20;
+  int panelY = 680;  
+  int panelW = 830;
+  int panelH = 90;   
+
+  fill(255, 28);
+  noStroke();
+  rect(panelX, panelY, panelW, panelH, 10);
+
+  fill(255);
+  textSize(14);
+  text("Selected Flight Details", panelX + 15, panelY + 20);
+
+  textSize(10);
+  fill(220);
+
+  int leftX = panelX + 15;
+  int rightX = panelX + 430;
+
+  text("FL_DATE: " + f.flDate, leftX, panelY + 40);
+  text("MKT_CARRIER: " + f.airline, leftX, panelY + 55);
+  text("MKT_CARRIER_FL_NUM: " + f.flightNum, leftX, panelY + 70);
+
+  text("ORIGIN: " + f.origin, rightX, panelY + 40);
+  text("ORIGIN_CITY_NAME: " + f.originCity, rightX, panelY + 55);
+  text("ORIGIN_STATE_ABR: " + f.originState, rightX, panelY + 70);
+
+  text("ORIGIN_WAC: " + f.originWac, leftX + 180, panelY + 40);
+  text("DEST: " + f.dest, leftX + 180, panelY + 55);
+  text("DEST_CITY_NAME: " + f.destCity, leftX + 180, panelY + 70);
+
+  text("DEST_STATE_ABR: " + f.destState, rightX + 210, panelY + 40);
+  text("DEST_WAC: " + f.destWac, rightX + 210, panelY + 55);
+  text("DISTANCE: " + f.distance, rightX + 210, panelY + 70);
+
+  fill(255, 210, 120);
+  text("CRS_DEP_TIME: " + f.crsDepTime + "   DEP_TIME: " + f.depTime, panelX + 15, panelY + 86);
+  text("CRS_ARR_TIME: " + f.crsArrTime + "   ARR_TIME: " + f.arrTime, panelX + 340, panelY + 86);
+  text("CANCELLED: " + f.cancelled + "   DIVERTED: " + f.diverted, panelX + 620, panelY + 86);
 }
 
 void drawCalendarPopup() {
@@ -302,17 +393,16 @@ void drawCalendarPopup() {
 }
 
 void mouseWheel(MouseEvent event) {
-  if (!showResults) return;
+  if (!showResults || showCalendar) return;
+
+  if (mouseX < resultsPanelX || mouseX > resultsPanelX + resultsPanelW ||
+      mouseY < resultsPanelY || mouseY > resultsPanelY + resultsPanelH) {
+    return;
+  }
 
   float e = event.getCount();
   targetOffset -= e * 30;
-
-  float totalContentHeight = searchResults.size() * 82;
-  float visibleHeight = 580;
-  float maxScroll = -(totalContentHeight - visibleHeight);
-
-  if (maxScroll > 0) maxScroll = 0;
-  targetOffset = constrain(targetOffset, maxScroll, 0);
+  targetOffset = constrain(targetOffset, getMaxScroll(), 0);
 }
 
 void mousePressed() {
@@ -320,6 +410,7 @@ void mousePressed() {
     handleCalendarClick();
     return;
   }
+
   if (mouseX > 30 && mouseX < 220 && mouseY > 40 && mouseY < 110) {
     activeBox = 1;
   }
@@ -338,6 +429,9 @@ void mousePressed() {
   }
   else if (mouseX > 870 && mouseX < 1020 && mouseY > 40 && mouseY < 110) {
     scrollOffset = 0;
+    targetOffset = 0;
+    draggingScrollbar = false;
+
     if (isDateOrderValid()) {
       performSearch();
       showResults = true;
@@ -350,19 +444,42 @@ void mousePressed() {
     useIATAMode = !useIATAMode;
     activeBox = 0;
   }
+  else if (isMouseOnScrollbarTrack()) {
+    if (getMaxScroll() < 0) {
+      if (isMouseOnScrollbarThumb()) {
+        draggingScrollbar = true;
+        scrollbarDragOffset = mouseY - getScrollbarThumbY();
+      } else {
+        draggingScrollbar = true;
+        scrollbarDragOffset = getScrollbarThumbHeight() / 2.0;
+        updateScrollFromScrollbar(mouseY - scrollbarDragOffset);
+      }
+    }
+    activeBox = 0;
+  }
   else if (showResults && mouseX > 880 && mouseX < 1170 && mouseY > 170 && mouseY < 760) {
-    for (int i=0;i<searchResults.size();i++){
-      float yPos=170+(i*82)+scrollOffset;
-      if (mouseX>880&&mouseX<1170&&mouseY>yPos&&mouseY<yPos+72){
-        selectedFlight=searchResults.get(i);
+    for (int i = 0; i < searchResults.size(); i++) {
+      float yPos = 170 + (i * resultStepY) + scrollOffset;
+      if (mouseX > 880 && mouseX < 1170 && mouseY > yPos && mouseY < yPos + resultCardH) {
+        selectedFlight = searchResults.get(i);
         break;
       }
     }
-    activeBox=0;
+    activeBox = 0;
   }
   else {
-    activeBox=0;
+    activeBox = 0;
   }
+}
+
+void mouseDragged() {
+  if (draggingScrollbar) {
+    updateScrollFromScrollbar(mouseY - scrollbarDragOffset);
+  }
+}
+
+void mouseReleased() {
+  draggingScrollbar = false;
 }
 
 void handleCalendarClick() {
@@ -386,9 +503,17 @@ void handleCalendarClick() {
       String chosenDate = formatJan2022Date(day);
 
       if (calendarTargetBox == 3) {
-        startDateInput = chosenDate;
+        if (startDateInput.equals(chosenDate)) {
+          startDateInput = "";
+        } else {
+          startDateInput = chosenDate;
+        }
       } else if (calendarTargetBox == 4) {
-        endDateInput = chosenDate;
+        if (endDateInput.equals(chosenDate)) {
+          endDateInput = "";
+        } else {
+          endDateInput = chosenDate;
+        }
       }
 
       showCalendar = false;
@@ -406,22 +531,17 @@ void keyPressed() {
   if (showCalendar) return;
 
   if (activeBox == 1) {
-    if (key == BACKSPACE && fromInput.length() > 0) {
-      fromInput = fromInput.substring(0, fromInput.length() - 1);
-    } else if (key != CODED && key != ENTER && key != RETURN) {
-      fromInput += key;
-    }
-  } 
+    fromInput = updateTextInput(fromInput);
+  }
   else if (activeBox == 2) {
-    if (key == BACKSPACE && toInput.length() > 0) {
-      toInput = toInput.substring(0, toInput.length() - 1);
-    } else if (key != CODED && key != ENTER && key != RETURN) {
-      toInput += key;
-    }
+    toInput = updateTextInput(toInput);
   }
 
   if (key == ENTER || key == RETURN) {
     scrollOffset = 0;
+    targetOffset = 0;
+    draggingScrollbar = false;
+
     if (isDateOrderValid()) {
       performSearch();
       showResults = true;
@@ -429,6 +549,19 @@ void keyPressed() {
       println("End date must be after start date.");
     }
   }
+}
+
+String updateTextInput(String currentValue) {
+  if ((key == BACKSPACE || key == DELETE) && currentValue.length() > 0) {
+    return currentValue.substring(0, currentValue.length() - 1);
+  } else if (isPrintableKey(key)) {
+    return currentValue + key;
+  }
+  return currentValue;
+}
+
+boolean isPrintableKey(char k) {
+  return k != CODED && k >= 32 && k != 127;
 }
 
 void performSearch() {
@@ -449,7 +582,7 @@ void performSearch() {
       mT = sT.isEmpty() || normalizeCity(f.destCity).contains(normalizeCity(sT));
     }
 
-    boolean mD = isDateInRange(f.date, startDateInput, endDateInput);
+    boolean mD = isDateInRange(f.flDate, startDateInput, endDateInput);
 
     if (mF && mT && mD && !(fromInput.trim().equals("") && toInput.trim().equals("") && startDateInput.equals("") && endDateInput.equals(""))) {
       searchResults.add(f);
@@ -489,7 +622,7 @@ boolean isDateInRange(String flightDateStr, String startStr, String endStr) {
     }
 
     return true;
-  } 
+  }
   catch (Exception e) {
     println("Date parse error: " + e.getMessage());
     return false;
@@ -504,7 +637,7 @@ boolean isDateOrderValid() {
     Date endDate = selectedDateFormat.parse(endDateInput);
 
     return !startDate.after(endDate);
-  } 
+  }
   catch (Exception e) {
     return false;
   }
@@ -514,19 +647,109 @@ String formatJan2022Date(int day) {
   return "01/" + nf(day, 2) + "/2022";
 }
 
+float getTotalContentHeight() {
+  return searchResults.size() * resultStepY;
+}
+
+float getMaxScroll() {
+  float maxScroll = -(getTotalContentHeight() - resultsClipH);
+  if (maxScroll > 0) maxScroll = 0;
+  return maxScroll;
+}
+
+float getScrollbarThumbHeight() {
+  float totalContentHeight = max(getTotalContentHeight(), (float)resultsClipH);
+  float thumbH = (resultsClipH * resultsClipH) / totalContentHeight;
+  return constrain(thumbH, 40, resultsClipH);
+}
+
+float getScrollbarThumbY() {
+  float maxScroll = getMaxScroll();
+  float thumbH = getScrollbarThumbHeight();
+
+  if (maxScroll == 0) return scrollbarY;
+
+  float progress = scrollOffset / maxScroll;
+  progress = constrain(progress, 0, 1);
+
+  return scrollbarY + progress * (scrollbarH - thumbH);
+}
+
+boolean isMouseOnScrollbarTrack() {
+  return showResults &&
+         mouseX >= scrollbarX - 3 &&
+         mouseX <= scrollbarX + scrollbarW + 3 &&
+         mouseY >= scrollbarY &&
+         mouseY <= scrollbarY + scrollbarH;
+}
+
+boolean isMouseOnScrollbarThumb() {
+  float thumbY = getScrollbarThumbY();
+  float thumbH = getScrollbarThumbHeight();
+
+  return isMouseOnScrollbarTrack() &&
+         mouseY >= thumbY &&
+         mouseY <= thumbY + thumbH;
+}
+
+void updateScrollFromScrollbar(float newThumbTop) {
+  float maxScroll = getMaxScroll();
+
+  if (maxScroll == 0) {
+    scrollOffset = 0;
+    targetOffset = 0;
+    return;
+  }
+
+  float thumbH = getScrollbarThumbHeight();
+  float constrainedThumbTop = constrain(newThumbTop, scrollbarY, scrollbarY + scrollbarH - thumbH);
+  float progress = (constrainedThumbTop - scrollbarY) / (scrollbarH - thumbH);
+
+  targetOffset = progress * maxScroll;
+  scrollOffset = targetOffset;
+}
+
 class Flight {
-  String date, airline, origin, dest;
-  String originCity, destCity;
+  String flDate;
+  String airline;
+  String flightNum;
+  String origin;
+  String originCity;
+  String originState;
+  String originWac;
+  String dest;
+  String destCity;
+  String destState;
+  String destWac;
+  String crsDepTime;
+  String depTime;
+  String crsArrTime;
+  String arrTime;
+  String cancelled;
+  String diverted;
+  String distance;
 
   Flight(String line) {
     String[] cols = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-    if (cols.length >= 9) {
-      this.date = cols[0].trim();
-      this.airline = cols[1].trim();
+    if (cols.length >= 18) {
+      this.flDate = cols[0].replaceAll("\"", "").trim();
+      this.airline = cols[1].replaceAll("\"", "").trim();
+      this.flightNum = cols[2].replaceAll("\"", "").trim();
       this.origin = cols[3].replaceAll("\"", "").trim();
       this.originCity = cols[4].replaceAll("\"", "").trim();
+      this.originState = cols[5].replaceAll("\"", "").trim();
+      this.originWac = cols[6].replaceAll("\"", "").trim();
       this.dest = cols[7].replaceAll("\"", "").trim();
       this.destCity = cols[8].replaceAll("\"", "").trim();
+      this.destState = cols[9].replaceAll("\"", "").trim();
+      this.destWac = cols[10].replaceAll("\"", "").trim();
+      this.crsDepTime = cols[11].replaceAll("\"", "").trim();
+      this.depTime = cols[12].replaceAll("\"", "").trim();
+      this.crsArrTime = cols[13].replaceAll("\"", "").trim();
+      this.arrTime = cols[14].replaceAll("\"", "").trim();
+      this.cancelled = cols[15].replaceAll("\"", "").trim();
+      this.diverted = cols[16].replaceAll("\"", "").trim();
+      this.distance = cols[17].replaceAll("\"", "").trim();
     }
   }
 }
