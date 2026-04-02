@@ -136,23 +136,30 @@ int toDate = 0;
 float widgetW = 200;
 float widgetH = 60;
 float dateWidgetX = 550;
-float dateWidgetY = 70;
+float dateWidgetY = 160;
 float lateWidgetX = 300;
-float lateWidgetY = 70;
+float lateWidgetY = 160;
 float searchWidgetX = 900;
 float searchWidgetY = 70;
 
-float startX2 = 300;
-float startY2 = 400;
+float startX2 = 360;
+float startY2 = 380;
 float radius = 40;
 float gap = 20;
 
-float fromX = 280;
-float fromY = 350;
-float toX = 560;
-float toY = 350;
-float clearX = 580;
-float clearY = 700;
+float fromX = 340;
+float fromY = 330;
+float toX = 620;
+float toY = 330;
+float clearX = 640;
+float clearY = 680;
+
+float ascWidgetX = 100;
+float ascWidgetY = 300;
+float ascWidgetW = 50;
+float ascWidgetH = 150;
+float desWidgetX = 100;
+float desWidgetY = 450;
 
 Widget duration = new Widget(dateWidgetX, dateWidgetY, 
                               widgetW, widgetH, "Duration", true);
@@ -162,6 +169,10 @@ Widget search = new Widget(searchWidgetX, searchWidgetY,
                               widgetW, widgetH, "Search", true);
 Widget clear = new Widget(clearX, clearY, 
                           widgetW / 1.5, widgetH / 1.5, "clear", true);
+Widget ascending = new Widget(ascWidgetX, ascWidgetY, 
+                          ascWidgetW, ascWidgetH, "↑", true);
+Widget descending = new Widget(desWidgetX, desWidgetY, 
+                          ascWidgetW, ascWidgetH, "↓", true);
 
 void setup() {
   size(1200,800);
@@ -190,7 +201,7 @@ void setup() {
   
   // Stats Page Setup
   
-    textFont(createFont("Arial", 12));
+  textFont(createFont("Arial", 12));
   flightCounts = new int [totalBars];
   xLabels = new String[totalBars];
   
@@ -222,14 +233,14 @@ void setup() {
     
     //Flight sorter setup
     
-      for (int i = 0; i < 31; i++) {
-    int date = i + 1;
-    int index = i + 5; //5 offsets it so 1 starts on 6th column (Saturday)
-    int col = index % 7; //7 being the total columns (days in a week)
-    int row = index / 7;
+    for (int i = 0; i < 31; i++) {
+      int date = i + 1;
+      int index = i + 5; //5 offsets it so 1 starts on 6th column (Saturday)
+      int col = index % 7; //7 being the total columns (days in a week)
+      int row = index / 7;
     
-    float x = startX2 + col * (radius + gap);
-    float y = startY2 + row * (radius + gap);
+      float x = startX2 + col * (radius + gap);
+      float y = startY2 + row * (radius + gap);
     
     dates[i] = new DateWidget(x, y, radius, date);
   }
@@ -333,19 +344,38 @@ void draw(){
   else if (flightSorterPage) {
     background(10, 25, 45);
     textSize(20);
+    
+    fill(255);
+    stroke(0);
+    strokeWeight(2);
+    rect(fromX - 110, fromY - 70, 615, 480, 10);
+    
+    fill(0);
+    line(fromX - 110, fromY + 20, fromX+ 505, fromY + 20);
 
     duration.draw();
     lateness.draw();
-    search.draw();
     clear.draw();
-    
+    ascending.draw();
+    descending.draw();
+     
     for (int i = 0; i < 31; i++) {
       dates[i].draw();
     }
     textAlign(LEFT);
-    fill(255);
+    fill(0);
     text(from, fromX, fromY);
     text(too, toX, toY);
+    
+  
+    float dx=targetOffset-scrollOffset;
+    scrollOffset+=dx*easing;
+  
+    drawHeaderSearch();
+  
+    if (showResults){
+      drawResultsPanel();
+    }
   }
   
   textSize(18);
@@ -373,6 +403,8 @@ void loadAirportLocations(){
 
 void drawHeaderSearch(){
   fill(255);
+  
+  if (flightFinderPage) {
   noStroke();
   rect(190,40,660,70,10);
 
@@ -380,9 +412,19 @@ void drawHeaderSearch(){
   line(355,50,355,100);
   line(520,50,520,100);
   line(685,50,685,100);
+  }
+  
+  else if (flightSorterPage) {
+  noStroke();
+  rect(190, 40, 660, 70, 10);
+  stroke(220);
+  line(520,50,520,100);
+  }
 
   fill(100);
   textSize(12);
+  
+ if (flightFinderPage) {
 
   if (useIATAMode){
     text("From (Origin)",205,60);
@@ -392,30 +434,42 @@ void drawHeaderSearch(){
     text("To City",370,60);
   }
 
-  text("Start Date",535,60);
-  text("End Date",700,60);
+    text("Start Date",535,60);
+    text("End Date",700,60);
 
-  fill(0);
-  textSize(18);
+    fill(0);
+    textSize(18);
 
-  text(fromInput+(activeBox==1?"|":""),205,90);
-  text(toInput+(activeBox==2?"|" : ""),370,90);
+    text(fromInput+(activeBox==1?"|":""),205,90);
+    text(toInput+(activeBox==2?"|" : ""),370,90);
 
-  if (startDateInput.equals("")) {
+    if (startDateInput.equals("")) {
     fill(140);
     text("Select date", 535, 90);
-  } else {
+    } else {
     fill(0);
     text(startDateInput, 535, 90);
-  }
+    }
 
-  if (endDateInput.equals("")) {
+    if (endDateInput.equals("")) {
     fill(140);
     text("Select date", 700, 90);
-  } else {
+    } else {
     fill(0);
     text(endDateInput, 700, 90);
+    }
   }
+  
+ else if (flightSorterPage) {
+  if (useIATAMode){
+    text("From (Origin)",205,60);
+    text("To (Dest)",535,60);
+  }else{
+    text("From City",205,60);
+    text("To City",370,60);
+  }
+ 
+ }
 
   fill(0, 120, 255);
   noStroke();
@@ -846,7 +900,22 @@ void mousePressed() {
       }
   }
     
-  else if (flightSorterPage) {
+  else if (flightSorterPage) {        
+        if (mouseX > ascWidgetX &&
+            mouseX < ascWidgetX + ascWidgetW &&
+            mouseY > ascWidgetY && 
+            mouseY < ascWidgetY + ascWidgetH) {
+          ascending.selected = true;
+          descending.selected = false;
+        }
+        if (mouseX > desWidgetX &&
+            mouseX < desWidgetX + ascWidgetW &&
+            mouseY > desWidgetY && 
+            mouseY < desWidgetY + ascWidgetH) {
+          ascending.selected = false;
+          descending.selected = true;
+        }
+        
         for (int i = 0; i < 31; i++) {
           if (mouseX > dates[i].x - radius &&
               mouseX < dates[i].x + radius &&
