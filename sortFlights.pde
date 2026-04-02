@@ -4,6 +4,7 @@ T. Byrne, Sorts flight lists by lateness, date, and airport, 08:50, 19/03/2026
 T. Byrne, Adds sorting by busyness for airports, 15:40, 19/03/2026
 T. Byrne, Refactors code to reduce repetition, 15:50, 19/03/2026
 T. Byrne, Adds least reliable airports, 17:05, 19/03/2026
+T. Byrne, Allows this to load the airports itself - reducing depedence on main.pde, 10:25, 02/04/2026
 
 */
 
@@ -81,6 +82,34 @@ class SortFlights {
         return dir * (a.cancelledOrDiverted - b.cancelledOrDiverted);
       }
     });
+    return airports;
+  }
+
+  ArrayList<Airport> getAirports(List<Flight> flightList) {
+    ArrayList<Airport> airports = new ArrayList<Airport>();
+    for (Flight f : flightList) {
+      String[] ap = {f.origin, f.dest};
+      String[] cities = {f.originCity, f.destCity};
+      for (int j = 0; j < ap.length; j++) {
+        String a = ap[j];
+        int position = -1;
+        for (int i = 0; i < airports.size(); i++) {
+          if (airports.get(i).aberviation.equals(a)) {
+            position = i;
+            airports.get(i).flightCount++;
+            airports.get(i).cancelledOrDiverted += (Integer.parseInt(f.cancelled) + Integer.parseInt(f.diverted));
+          }
+        }
+        if (position == -1) {
+          Airport newAirport = new Airport();
+          newAirport.aberviation = a;
+          newAirport.city = cities[j];
+          newAirport.flightCount = 1;
+          newAirport.cancelledOrDiverted = (Integer.parseInt(f.cancelled) + Integer.parseInt(f.diverted));
+          airports.add(newAirport);
+        }
+      }
+    }
     return airports;
   }
 

@@ -1,8 +1,14 @@
+/*
+CHANGELOG:
+K. Ji, Created the Flight Search System, XX:XX, XX/03/2026
+T. Byrne, Moved to using Kryo to load the CSV file, and set it up to be called by main instead so that when we switch between screens it works better, 10:25, 02/04/2026
+
+*/
+
 import java.util.HashMap;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-ArrayList<Flight> allFlights=new ArrayList<Flight>();
 ArrayList<Flight> searchResults=new ArrayList<Flight>();
 HashMap<String, PVector> airportCoords=new HashMap<String, PVector>();
 
@@ -51,12 +57,9 @@ int scrollbarY=170;
 int scrollbarW=6;
 int scrollbarH=580;
 
-SimpleDateFormat flightFormat=new SimpleDateFormat("MM/dd/yyyy HH:mm");
 SimpleDateFormat selectedDateFormat=new SimpleDateFormat("MM/dd/yyyy");
 
-void setup() {
-  size(1200,800);
-
+void initFSS() {
   american_Map=loadImage("map/American Map.png");
 
   String[] airlineCodes={"AA","UA","DL","F9","AS","B6","G4","HA","NK","WN"};
@@ -66,18 +69,10 @@ void setup() {
 
   loadAirportLocations();
 
-  String[] lines=loadStrings("flights_full.csv");
-  for (int i=1;i<lines.length;i++){
-    if (lines[i].trim().length()>0){
-      allFlights.add(new Flight(lines[i]));
-    }
-  }
-
-  flightFormat.setLenient(false);
   selectedDateFormat.setLenient(false);
 }
 
-void draw(){
+void drawFSS(){
   background(10,25,45);
 
   if (american_Map!=null){
@@ -245,14 +240,14 @@ void drawResultsPanel() {
       fill(200);
       text(f.originCity + " → " + f.destCity, 895, yPos + 38);
       text("DATE: " + f.flDate, 895, yPos + 53);
-      text("AIRLINE: " + f.airline, 895, yPos + 67);
+      text("AIRLINE: " + f.carrier, 895, yPos + 67);
 
-      PImage logoImg = logos.get(f.airline);
+      PImage logoImg = logos.get(f.carrier);
       if (logoImg != null) {
         image(logoImg, 1120, yPos + 16, 34, 34);
       } else {
         fill(255, 120);
-        text(f.airline, 1120, yPos + 38);
+        text(f.carrier, 1120, yPos + 38);
       }
     }
   }
@@ -304,7 +299,7 @@ void drawFlightDetailsPanel(Flight f) {
   int rightX = panelX + 430;
 
   text("FL_DATE: " + f.flDate, leftX, panelY + 40);
-  text("MKT_CARRIER: " + f.airline, leftX, panelY + 55);
+  text("MKT_CARRIER: " + f.carrier, leftX, panelY + 55);
   text("MKT_CARRIER_FL_NUM: " + f.flightNum, leftX, panelY + 70);
 
   text("ORIGIN: " + f.origin, rightX, panelY + 40);
@@ -392,7 +387,7 @@ void drawCalendarPopup() {
   textAlign(LEFT, BASELINE);
 }
 
-void mouseWheel(MouseEvent event) {
+void fssMouseWheel(MouseEvent event) {
   if (!showResults || showCalendar) return;
 
   if (mouseX < resultsPanelX || mouseX > resultsPanelX + resultsPanelW ||
@@ -405,7 +400,7 @@ void mouseWheel(MouseEvent event) {
   targetOffset = constrain(targetOffset, getMaxScroll(), 0);
 }
 
-void mousePressed() {
+void fssMousePressed() {
   if (showCalendar) {
     handleCalendarClick();
     return;
@@ -472,13 +467,13 @@ void mousePressed() {
   }
 }
 
-void mouseDragged() {
+void fssMouseDragged() {
   if (draggingScrollbar) {
     updateScrollFromScrollbar(mouseY - scrollbarDragOffset);
   }
 }
 
-void mouseReleased() {
+void fssMouseReleased() {
   draggingScrollbar = false;
 }
 
@@ -527,7 +522,7 @@ void handleCalendarClick() {
   }
 }
 
-void keyPressed() {
+void fssKeyPressed() {
   if (showCalendar) return;
 
   if (activeBox == 1) {
@@ -608,7 +603,7 @@ String normalizeCity(String s) {
 
 boolean isDateInRange(String flightDateStr, String startStr, String endStr) {
   try {
-    Date flightDate = flightFormat.parse(flightDateStr);
+    Date flightDate = selectedDateFormat.parse(flightDateStr);
 
     if (!startStr.equals("")) {
       Date startDate = selectedDateFormat.parse(startStr);
@@ -709,47 +704,3 @@ void updateScrollFromScrollbar(float newThumbTop) {
   scrollOffset = targetOffset;
 }
 
-class Flight {
-  String flDate;
-  String airline;
-  String flightNum;
-  String origin;
-  String originCity;
-  String originState;
-  String originWac;
-  String dest;
-  String destCity;
-  String destState;
-  String destWac;
-  String crsDepTime;
-  String depTime;
-  String crsArrTime;
-  String arrTime;
-  String cancelled;
-  String diverted;
-  String distance;
-
-  Flight(String line) {
-    String[] cols = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-    if (cols.length >= 18) {
-      this.flDate = cols[0].replaceAll("\"", "").trim();
-      this.airline = cols[1].replaceAll("\"", "").trim();
-      this.flightNum = cols[2].replaceAll("\"", "").trim();
-      this.origin = cols[3].replaceAll("\"", "").trim();
-      this.originCity = cols[4].replaceAll("\"", "").trim();
-      this.originState = cols[5].replaceAll("\"", "").trim();
-      this.originWac = cols[6].replaceAll("\"", "").trim();
-      this.dest = cols[7].replaceAll("\"", "").trim();
-      this.destCity = cols[8].replaceAll("\"", "").trim();
-      this.destState = cols[9].replaceAll("\"", "").trim();
-      this.destWac = cols[10].replaceAll("\"", "").trim();
-      this.crsDepTime = cols[11].replaceAll("\"", "").trim();
-      this.depTime = cols[12].replaceAll("\"", "").trim();
-      this.crsArrTime = cols[13].replaceAll("\"", "").trim();
-      this.arrTime = cols[14].replaceAll("\"", "").trim();
-      this.cancelled = cols[15].replaceAll("\"", "").trim();
-      this.diverted = cols[16].replaceAll("\"", "").trim();
-      this.distance = cols[17].replaceAll("\"", "").trim();
-    }
-  }
-}
