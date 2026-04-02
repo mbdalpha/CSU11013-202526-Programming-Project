@@ -1,16 +1,25 @@
 //array printed out on Page 1 from left to right for both 'busyAirportNames'
 //and 'busyValues'. sort from largest to smallest from left to right for top 20
 //busiest airports and their respective values.
-String[] busyAirportNames = {"LAX", "LHR", "JFK", "CDG", "DXB", "LAX", "LHR", "JFK", "CDG", "DXB"};
-int[] busyValues = {300, 800, 1200, 600, 1500, 300, 800, 1200, 600, 1500};
+
+List<Flight> flights = csv.getFlights();
+int n = min(20, flights.size());
+SortFlights sorter = new SortFlights();
+List<Flight> busiestAirports = sorter.sortByBusiest(flights, SortFlights.DESCENDING).subList(0, n);
+
+//String[] busyAirportNames = {"LAX", "LHR", "JFK", "CDG", "DXB", "LAX", "LHR", "JFK", "CDG", "DXB"};
+//int[] busyValues = {300, 800, 1200, 600, 1500, 300, 800, 1200, 600, 1500};
 
 //array printed out on Page 2 from top to bottom for both 'leastReliableAirportNames'
 //and 'NoOfFlightsCancelledOrDelayed'. Reading array from left to right shows the
 //Least reliable to 10th least reliable airport.
-String[] leastReliableAirportNames = {"LAX", "LHR", "JFK", "CDG", "DXB", "LAX", "LHR", "JFK", "CDG", "DXB"};
+
+List<Flight> unreliableAirports = sorter.sortByReliability(flights, SortFlights.ASCENDING).sublist(0, n);
+
+//String[] leastReliableAirportNames = {"LAX", "LHR", "JFK", "CDG", "DXB", "LAX", "LHR", "JFK", "CDG", "DXB"};
 //number of flights cancelled or delayed, position of integer in array corresponds to index
 //of airports in the String array
-int[] NoOfFlightsCancelledOrDelayed = {232, 500, 1000, 10, 100, 232, 500, 1000, 10, 100};
+//int[] NoOfFlightsCancelledOrDelayed = {232, 500, 1000, 10, 100, 232, 500, 1000, 10, 100};
 
 
 int[] Ranking = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -50,10 +59,10 @@ void setup() {
   marks = new Marking(120, 660, 540, flightDataSize, step);
   
     for (int i = 0; i < totalAirports; i++) {
-      int index = i % busyValues.length; 
+      int index = i % busiestAirports.size(); 
       int xPos = startX + i * spacing1;
     
-      theLocation[i] = new Location(busyValues[index], xPos, busyAirportNames[index]);
+      theLocation[i] = new Location(busiestAirports.get(index).flightCount, xPos, busiestAirports.get(index).aberviation);
     }
     
     for (int i = 0; i < 10; i++) {
@@ -264,8 +273,8 @@ void drawPage2() {
     theRank[i].draw();
     
     int yPos = (startY + i * spacing2) - 10;
-    text(leastReliableAirportNames[i], 460, yPos);
-    text(NoOfFlightsCancelledOrDelayed[i], 790, yPos);
+    text(unreliableAirports.get(i).aberviation, 460, yPos);
+    text(unreliableAirports.get(i).cancelledOrDiverted, 790, yPos);
   }
   
 }
