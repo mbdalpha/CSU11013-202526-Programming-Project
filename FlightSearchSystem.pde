@@ -57,11 +57,11 @@ SimpleDateFormat selectedDateFormat=new SimpleDateFormat("MM/dd/yyyy");
 void setup() {
   size(1200,800);
 
-  american_Map=loadImage("American Map.png");
+  american_Map=loadImage("map/American Map.png");
 
   String[] airlineCodes={"AA","UA","DL","F9","AS","B6","G4","HA","NK","WN"};
   for (String code:airlineCodes){
-    logos.put(code,loadImage(code +".png"));
+    logos.put(code,loadImage("airlines/" + code + ".png"));
   }
 
   loadAirportLocations();
@@ -107,7 +107,7 @@ void draw(){
 }
 
 void loadAirportLocations(){
-  String[] lines=loadStrings("airports_location.csv");
+  String[] lines=loadStrings("airport_tables/airports_location.csv");
   for (int i=1; i<lines.length;i++){
     String[] cols=lines[i].split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
     if (cols.length>17){
