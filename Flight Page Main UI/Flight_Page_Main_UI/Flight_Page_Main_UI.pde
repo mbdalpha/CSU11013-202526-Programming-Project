@@ -2,6 +2,10 @@ import java.util.HashMap;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+int pageCount = 4;
+Widget[] pages = new Widget[pageCount];
+Widget dropDown = new Widget(0, 0, 150, 50, "Pages", false);
+
 Boolean flightFinderPage = true;
 Boolean statsPage = false;
 Boolean airportFlightsPage = false;
@@ -151,13 +155,13 @@ float clearX = 580;
 float clearY = 700;
 
 Widget duration = new Widget(dateWidgetX, dateWidgetY, 
-                              widgetW, widgetH, "Duration");
+                              widgetW, widgetH, "Duration", true);
 Widget lateness = new Widget(lateWidgetX, lateWidgetY, 
-                              widgetW, widgetH, "Lateness");
+                              widgetW, widgetH, "Lateness", true);
 Widget search = new Widget(searchWidgetX, searchWidgetY, 
-                              widgetW, widgetH, "Search");
+                              widgetW, widgetH, "Search", true);
 Widget clear = new Widget(clearX, clearY, 
-                          widgetW / 2, widgetH / 2, "clear");
+                          widgetW / 1.5, widgetH / 1.5, "clear", true);
 
 void setup() {
   size(1200,800);
@@ -230,10 +234,25 @@ void setup() {
     dates[i] = new DateWidget(x, y, radius, date);
   }
   
+  for (int i = 0; i < pageCount; i++) {
+    float x = 0;
+    float h = 50;
+    float w = 150;
+    float y = h + i * h;
+    String label = Integer.toString(i);
+    
+    pages[i] = new Widget(x, y, w, h, label, false);
+  }
+  pages[0].label = "Flight Finder";
+  pages[1].label = "Flights by Airport";
+  pages[2].label = "Flight Sorter";
+  pages[3].label = "Statistics";
+  
 }
 
 void draw(){
   background(10,25,45);
+  textAlign(LEFT);
   
   if (flightFinderPage) {
 
@@ -329,6 +348,14 @@ void draw(){
     text(too, toX, toY);
   }
   
+  textSize(18);
+    dropDown.draw();
+      if (dropDown.selected) {
+        for (int i = 0; i < pageCount; i++) {
+          pages[i].draw();
+        }
+      }
+  
 }
 
 void loadAirportLocations(){
@@ -347,47 +374,47 @@ void loadAirportLocations(){
 void drawHeaderSearch(){
   fill(255);
   noStroke();
-  rect(30,40,820,70,10);
+  rect(190,40,660,70,10);
 
   stroke(220);
-  line(220,50,220,100);
-  line(410,50,410,100);
-  line(620,50,620,100);
+  line(355,50,355,100);
+  line(520,50,520,100);
+  line(685,50,685,100);
 
   fill(100);
   textSize(12);
 
   if (useIATAMode){
-    text("From (Origin)",50,60);
-    text("To (Dest)",240,60);
+    text("From (Origin)",205,60);
+    text("To (Dest)",370,60);
   }else{
-    text("From City",50,60);
-    text("To City",240,60);
+    text("From City",205,60);
+    text("To City",370,60);
   }
 
-  text("Start Date",430,60);
-  text("End Date",640,60);
+  text("Start Date",535,60);
+  text("End Date",700,60);
 
   fill(0);
   textSize(18);
 
-  text(fromInput+(activeBox==1?"|":""),50,90);
-  text(toInput+(activeBox==2?"|" : ""),240,90);
+  text(fromInput+(activeBox==1?"|":""),205,90);
+  text(toInput+(activeBox==2?"|" : ""),370,90);
 
   if (startDateInput.equals("")) {
     fill(140);
-    text("Select date", 430, 90);
+    text("Select date", 535, 90);
   } else {
     fill(0);
-    text(startDateInput, 430, 90);
+    text(startDateInput, 535, 90);
   }
 
   if (endDateInput.equals("")) {
     fill(140);
-    text("Select date", 640, 90);
+    text("Select date", 700, 90);
   } else {
     fill(0);
-    text(endDateInput, 640, 90);
+    text(endDateInput, 700, 90);
   }
 
   fill(0, 120, 255);
@@ -418,6 +445,7 @@ void drawHeaderSearch(){
   textAlign(LEFT, BASELINE);
 }
 
+
 void drawHeaderSearch2() 
 {
   fill(255);
@@ -434,7 +462,7 @@ void drawHeaderSearch2()
   rect(870, 40, 150, 70, 10);
   fill(255);
   textAlign(CENTER, CENTER);
-  textSize(18);
+  textSize(16);
   text("SEARCH", 945, 75);
   textAlign(LEFT, BASELINE);
 }
@@ -709,18 +737,18 @@ void mousePressed() {
           return;
         }
       
-        if (mouseX > 30 && mouseX < 220 && mouseY > 40 && mouseY < 110) {
+        if (mouseX > 190 && mouseX < 355 && mouseY > 40 && mouseY < 110) {
           activeBox = 1;
         }
-        else if (mouseX > 220 && mouseX < 410 && mouseY > 40 && mouseY < 110) {
+        else if (mouseX > 355 && mouseX < 520 && mouseY > 40 && mouseY < 110) {
           activeBox = 2;
         }
-        else if (mouseX > 410 && mouseX < 620 && mouseY > 40 && mouseY < 110) {
+        else if (mouseX >520 && mouseX < 685 && mouseY > 40 && mouseY < 110) {
           activeBox = 0;
           calendarTargetBox = 3;
           showCalendar = true;
         }
-        else if (mouseX > 620 && mouseX < 830 && mouseY > 40 && mouseY < 110) {
+        else if (mouseX > 685 && mouseX < 840 && mouseY > 40 && mouseY < 110) {
           activeBox = 0;
           calendarTargetBox = 4;
           showCalendar = true;
@@ -794,6 +822,10 @@ void mousePressed() {
           mouseY > 700 && mouseY < 760) {
         
           flightFinderPage = true;
+          for (int j = 0; j < pageCount; j++) {
+            pages[j].selected = false;
+          }
+          pages[0].selected = true;
       }    
   }
 
@@ -875,6 +907,67 @@ void mousePressed() {
             duration.selected = false;
           }
         }
+  }
+  
+  if (dropDown.selected) {
+    if (mouseX > pages[0].x &&
+        mouseX < pages[0].x + pages[0].w &&
+        mouseY > pages[0].y &&
+        mouseY < pages[0].y + pages[0].h) {
+      for (int j = 0; j < pageCount; j++) {
+          pages[j].selected = false;
+        }
+      pages[0].selected = true;
+      flightFinderPage = true;
+      airportFlightsPage = false;
+      flightSorterPage = false;
+      statsPage = false;
+    }
+    if (mouseX > pages[1].x &&
+        mouseX < pages[1].x + pages[1].w &&
+        mouseY > pages[1].y &&
+        mouseY < pages[1].y + pages[1].h) {
+      for (int j = 0; j < pageCount; j++) {
+          pages[j].selected = false;
+        }
+      pages[1].selected = true;
+      flightFinderPage = false;
+      airportFlightsPage = true;
+      flightSorterPage = false;
+      statsPage = false;
+    }
+    if (mouseX > pages[2].x &&
+        mouseX < pages[2].x + pages[2].w &&
+        mouseY > pages[2].y &&
+        mouseY < pages[2].y + pages[2].h) {
+      for (int j = 0; j < pageCount; j++) {
+          pages[j].selected = false;
+        }
+      pages[2].selected = true;
+      flightFinderPage = false;
+      airportFlightsPage = false;
+      flightSorterPage = true;
+      statsPage = false;
+    }
+    if (mouseX > pages[3].x &&
+        mouseX < pages[3].x + pages[3].w &&
+        mouseY > pages[3].y &&
+        mouseY < pages[3].y + pages[3].h) {
+      for (int j = 0; j < pageCount; j++) {
+          pages[j].selected = false;
+        }
+      pages[3].selected = true;
+      flightFinderPage = false;
+      airportFlightsPage = false;
+      flightSorterPage = false;
+      statsPage = true;
+    }
+  }
+  if (mouseX > dropDown.x &&
+      mouseX < dropDown.x + dropDown.w &&
+      mouseY > dropDown.y &&
+      mouseY < dropDown.y + dropDown.h) {
+    dropDown.selected = !dropDown.selected;
   }
 }
 
@@ -1175,6 +1268,50 @@ void updateScrollFromScrollbar(float newThumbTop) {
   scrollOffset = targetOffset;
 }
 
+class Flight {
+  String flDate;
+  String airline;
+  String flightNum;
+  String origin;
+  String originCity;
+  String originState;
+  String originWac;
+  String dest;
+  String destCity;
+  String destState;
+  String destWac;
+  String crsDepTime;
+  String depTime;
+  String crsArrTime;
+  String arrTime;
+  String cancelled;
+  String diverted;
+  String distance;
+
+  Flight(String line) {
+    String[] cols = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+    if (cols.length >= 18) {
+      this.flDate = cols[0].replaceAll("\"", "").trim();
+      this.airline = cols[1].replaceAll("\"", "").trim();
+      this.flightNum = cols[2].replaceAll("\"", "").trim();
+      this.origin = cols[3].replaceAll("\"", "").trim();
+      this.originCity = cols[4].replaceAll("\"", "").trim();
+      this.originState = cols[5].replaceAll("\"", "").trim();
+      this.originWac = cols[6].replaceAll("\"", "").trim();
+      this.dest = cols[7].replaceAll("\"", "").trim();
+      this.destCity = cols[8].replaceAll("\"", "").trim();
+      this.destState = cols[9].replaceAll("\"", "").trim();
+      this.destWac = cols[10].replaceAll("\"", "").trim();
+      this.crsDepTime = cols[11].replaceAll("\"", "").trim();
+      this.depTime = cols[12].replaceAll("\"", "").trim();
+      this.crsArrTime = cols[13].replaceAll("\"", "").trim();
+      this.arrTime = cols[14].replaceAll("\"", "").trim();
+      this.cancelled = cols[15].replaceAll("\"", "").trim();
+      this.diverted = cols[16].replaceAll("\"", "").trim();
+      this.distance = cols[17].replaceAll("\"", "").trim();
+    }
+  }
+}
 
 //STATS PAGE WORK
 
