@@ -122,47 +122,47 @@ void loadAirportLocations(){
 void drawHeaderSearch(){
   fill(255);
   noStroke();
-  rect(30,40,820,70,10);
+  rect(190,40,660,70,10);
 
   stroke(220);
-  line(220,50,220,100);
-  line(410,50,410,100);
-  line(620,50,620,100);
+  line(355,50,355,100);
+  line(520,50,520,100);
+  line(685,50,685,100);
 
   fill(100);
   textSize(12);
 
   if (useIATAMode){
-    text("From (Origin)",50,60);
-    text("To (Dest)",240,60);
+    text("From (Origin)",205,60);
+    text("To (Dest)",370,60);
   }else{
-    text("From City",50,60);
-    text("To City",240,60);
+    text("From City",205,60);
+    text("To City",370,60);
   }
 
-  text("Start Date",430,60);
-  text("End Date",640,60);
+  text("Start Date",535,60);
+  text("End Date",700,60);
 
   fill(0);
   textSize(18);
 
-  text(fromInput+(activeBox==1?"|":""),50,90);
-  text(toInput+(activeBox==2?"|" : ""),240,90);
+  text(fromInput+(activeBox==1?"|":""),205,90);
+  text(toInput+(activeBox==2?"|" : ""),370,90);
 
   if (startDateInput.equals("")) {
     fill(140);
-    text("Select date", 430, 90);
+    text("Select date", 535, 90);
   } else {
     fill(0);
-    text(startDateInput, 430, 90);
+    text(startDateInput, 535, 90);
   }
 
   if (endDateInput.equals("")) {
     fill(140);
-    text("Select date", 640, 90);
+    text("Select date", 700, 90);
   } else {
     fill(0);
-    text(endDateInput, 640, 90);
+    text(endDateInput, 700, 90);
   }
 
   fill(0, 120, 255);
@@ -411,18 +411,18 @@ void mousePressed() {
     return;
   }
 
-  if (mouseX > 30 && mouseX < 220 && mouseY > 40 && mouseY < 110) {
+  if (mouseX > 190 && mouseX < 355 && mouseY > 40 && mouseY < 110) {
     activeBox = 1;
   }
-  else if (mouseX > 220 && mouseX < 410 && mouseY > 40 && mouseY < 110) {
+  else if (mouseX > 355 && mouseX < 520 && mouseY > 40 && mouseY < 110) {
     activeBox = 2;
   }
-  else if (mouseX > 410 && mouseX < 620 && mouseY > 40 && mouseY < 110) {
+  else if (mouseX > 520 && mouseX < 685 && mouseY > 40 && mouseY < 110) {
     activeBox = 0;
     calendarTargetBox = 3;
     showCalendar = true;
   }
-  else if (mouseX > 620 && mouseX < 830 && mouseY > 40 && mouseY < 110) {
+  else if (mouseX > 685 && mouseX < 830 && mouseY > 40 && mouseY < 110) {
     activeBox = 0;
     calendarTargetBox = 4;
     showCalendar = true;
