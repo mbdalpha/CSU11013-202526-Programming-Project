@@ -130,9 +130,37 @@ class SortFlights {
     return airports;
   }
 
+  ArrayList<Airport> getAirports(List<Flight> flightList) {
+    ArrayList<Airport> airports = new ArrayList<Airport>();
+    for (Flight f : flightList) {
+      String[] ap = {f.origin, f.dest};
+      String[] cities = {f.originCity, f.destCity};
+      for (int j = 0; j < ap.length; j++) {
+        String a = ap[j];
+        int position = -1;
+        for (int i = 0; i < airports.size(); i++) {
+          if (airports.get(i).aberviation.equals(a)) {
+            position = i;
+            airports.get(i).flightCount++;
+            airports.get(i).cancelledOrDiverted += (Integer.parseInt(f.cancelled) + Integer.parseInt(f.diverted));
+          }
+        }
+        if (position == -1) {
+          Airport newAirport = new Airport();
+          newAirport.aberviation = a;
+          newAirport.city = cities[j];
+          newAirport.flightCount = 1;
+          newAirport.cancelledOrDiverted = (Integer.parseInt(f.cancelled) + Integer.parseInt(f.diverted));
+          airports.add(newAirport);
+        }
+      }
+    }
+    return airports;
+  }
+
   private int timeToMinutes(String time) {
     if (time == null || time.isEmpty()) return -1;
-    int t = Integer.parseInt(time.trim());
+    int t = (int)Float.parseFloat(time.trim());
     return (t / 100) * 60 + (t % 100);
   }
 
