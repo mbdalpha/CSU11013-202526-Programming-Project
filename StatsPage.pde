@@ -1,3 +1,11 @@
+/*
+CHANGELOG:
+[Other teammates]
+T. Byrne, gets the system working all together while attempting to follow some OOP prinicpals to break up the files compared to previous impliamention of them all combined, 02:20, 03/04/2026
+T. Byrne, makes the flight listings all use Kryo again, 12:30, 03/04/2026
+*/
+
+
 //array printed out on Page 1 from left to right for both 'busyAirportNames'
 //and 'busyValues'. sort from largest to smallest from left to right for top 20
 //busiest airports and their respective values.
@@ -15,9 +23,9 @@ int[] NoOfFlightsCancelledOrDelayed = {232, 500, 1000, 10, 100, 232, 500, 1000, 
 
 int[] Ranking = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-int flightDataSize = 2000;  // value can be altered to match data size of CSV file
+int flightDataSize;
 
-int step = flightDataSize / 10;
+int step;
 int spacing1 = 40;
 int spacing2 = 60;
 int startX = 195;
@@ -38,6 +46,8 @@ pageCounter thePageCounter;
 
 void initStats(){
     textFont(createFont("Arial", 12));
+    flightDataSize = allFlights.size();
+    step = flightDataSize / 10;
     flightCounts = new int [totalBars];
     xLabels = new String[totalBars];
 
@@ -65,7 +75,7 @@ void initStats(){
 
     xLabels[totalBars - 1] = "300+";
 
-    loadCSVData("flights_full.csv");
+    computeLateness(allFlights);
 }
 
 void drawStats(){
@@ -322,15 +332,13 @@ void drawPage3() {
   text("Total late flights (>= 15 min): " + totalLateFlights, width - rightPad, topPad);
 }
 
-void loadCSVData(String filename) {
-  Table table = loadTable(filename, "header");
+void computeLateness(ArrayList<Flight> flights) {
+  for (Flight f : flights) {
+    if (f.cancelled.trim().startsWith("1")) continue;
+    if (f.diverted.trim().startsWith("1")) continue;
 
-  for (TableRow row : table.rows()) {
-    if (row.getString("CANCELLED").trim().startsWith("1")) continue;
-    if (row.getString("DIVERTED").trim().startsWith("1")) continue;
-
-    String actualArrival    = row.getString("ARR_TIME").trim();
-    String scheduledArrival = row.getString("CRS_ARR_TIME").trim();
+    String actualArrival    = f.arrTime.trim();
+    String scheduledArrival = f.crsArrTime.trim();
     if (actualArrival.length() == 0 || scheduledArrival.length() == 0) continue;
 
     int scheduledHHMM = int(float(scheduledArrival));

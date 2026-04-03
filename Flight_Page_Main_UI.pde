@@ -1,8 +1,16 @@
+/*
+CHANGELOG:
+[Other teammates]
+T. Byrne, gets the system working all together while attempting to follow some OOP prinicpals to break up the files compared to previous impliamention of them all combined, 02:20, 03/04/2026
+T. Byrne, makes the flight listings all use Kryo again, 12:30, 03/04/2026
+*/
+
 import java.util.HashMap;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-// shared data
+// shared data — change this one line to switch dataset
+String FLIGHT_CSV = "data/flights_full.csv";
 ArrayList<Flight> allFlights;
 
 // page navigation
@@ -18,7 +26,7 @@ void setup() {
   size(1200, 800);
 
   // load csv using ReadCSV + kryo
-  ReadCSV csv = new ReadCSV(sketchPath("data/flights2k.csv"));
+  ReadCSV csv = new ReadCSV(sketchPath(FLIGHT_CSV));
   allFlights = new ArrayList<Flight>(csv.getFlights());
 
   // init each page
