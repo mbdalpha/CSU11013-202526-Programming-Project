@@ -9,23 +9,30 @@ int toDate = 0;
 float widgetW = 200;
 float widgetH = 60;
 float dateWidgetX = 550;
-float dateWidgetY = 70;
+float dateWidgetY = 160;
 float lateWidgetX = 300;
-float lateWidgetY = 70;
+float lateWidgetY = 160;
 float searchWidgetX = 900;
 float searchWidgetY = 70;
 
-float startX2 = 300;
-float startY2 = 400;
+float startX2 = 360;
+float startY2 = 380;
 float radius = 40;
 float gap = 20;
 
-float fromX = 280;
-float fromY = 350;
-float toX = 560;
-float toY = 350;
-float clearX = 580;
-float clearY = 700;
+float fromX = 340;
+float fromY = 330;
+float toX = 620;
+float toY = 330;
+float clearX = 640;
+float clearY = 680;
+
+float ascWidgetX = 100;
+float ascWidgetY = 300;
+float ascWidgetW = 50;
+float ascWidgetH = 150;
+float desWidgetX = 100;
+float desWidgetY = 450;
 
 Widget duration = new Widget(dateWidgetX, dateWidgetY,
                               widgetW, widgetH, "Duration", true);
@@ -35,6 +42,10 @@ Widget search = new Widget(searchWidgetX, searchWidgetY,
                               widgetW, widgetH, "Search", true);
 Widget clear = new Widget(clearX, clearY,
                           widgetW / 1.5, widgetH / 1.5, "clear", true);
+Widget ascending = new Widget(ascWidgetX, ascWidgetY,
+                          ascWidgetW, ascWidgetH, "↑", true);
+Widget descending = new Widget(desWidgetX, desWidgetY,
+                          ascWidgetW, ascWidgetH, "↓", true);
 
 void initFlightSorter(){
     //Flight sorter setup
@@ -56,21 +67,54 @@ void drawFlightSorter(){
     background(10, 25, 45);
     textSize(20);
 
+    fill(255);
+    stroke(0);
+    strokeWeight(2);
+    rect(fromX - 110, fromY - 70, 615, 480, 10);
+
+    fill(0);
+    line(fromX - 110, fromY + 20, fromX + 505, fromY + 20);
+
     duration.draw();
     lateness.draw();
-    search.draw();
     clear.draw();
+    ascending.draw();
+    descending.draw();
 
     for (int i = 0; i < 31; i++) {
       dates[i].draw();
     }
     textAlign(LEFT);
-    fill(255);
+    fill(0);
     text(from, fromX, fromY);
     text(too, toX, toY);
+
+    float dx = targetOffset - scrollOffset;
+    scrollOffset += dx * easing;
+
+    drawHeaderSearch();
+
+    if (showResults) {
+      drawResultsPanel();
+    }
 }
 
 void sorterMousePressed(){
+    if (mouseX > ascWidgetX &&
+        mouseX < ascWidgetX + ascWidgetW &&
+        mouseY > ascWidgetY &&
+        mouseY < ascWidgetY + ascWidgetH) {
+      ascending.selected = true;
+      descending.selected = false;
+    }
+    if (mouseX > desWidgetX &&
+        mouseX < desWidgetX + ascWidgetW &&
+        mouseY > desWidgetY &&
+        mouseY < desWidgetY + ascWidgetH) {
+      ascending.selected = false;
+      descending.selected = true;
+    }
+
     for (int i = 0; i < 31; i++) {
         if (mouseX > dates[i].x - radius &&
             mouseX < dates[i].x + radius &&

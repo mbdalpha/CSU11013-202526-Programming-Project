@@ -195,48 +195,66 @@ void finderKeyPressed(){
 
 void drawHeaderSearch(){
   fill(255);
-  noStroke();
-  rect(190,40,660,70,10);
 
-  stroke(220);
-  line(355,50,355,100);
-  line(520,50,520,100);
-  line(685,50,685,100);
+  if (flightFinderPage) {
+    noStroke();
+    rect(190,40,660,70,10);
+
+    stroke(220);
+    line(355,50,355,100);
+    line(520,50,520,100);
+    line(685,50,685,100);
+  } else if (flightSorterPage) {
+    noStroke();
+    rect(190, 40, 660, 70, 10);
+    stroke(220);
+    line(520,50,520,100);
+  }
 
   fill(100);
   textSize(12);
 
-  if (useIATAMode){
-    text("From (Origin)",205,60);
-    text("To (Dest)",370,60);
-  }else{
-    text("From City",205,60);
-    text("To City",370,60);
-  }
+  if (flightFinderPage) {
+    if (useIATAMode){
+      text("From (Origin)",205,60);
+      text("To (Dest)",370,60);
+    }else{
+      text("From City",205,60);
+      text("To City",370,60);
+    }
 
-  text("Start Date",535,60);
-  text("End Date",700,60);
+    text("Start Date",535,60);
+    text("End Date",700,60);
 
-  fill(0);
-  textSize(18);
-
-  text(fromInput+(activeBox==1?"|":""),205,90);
-  text(toInput+(activeBox==2?"|" : ""),370,90);
-
-  if (startDateInput.equals("")) {
-    fill(140);
-    text("Select date", 535, 90);
-  } else {
     fill(0);
-    text(startDateInput, 535, 90);
-  }
+    textSize(18);
 
-  if (endDateInput.equals("")) {
-    fill(140);
-    text("Select date", 700, 90);
-  } else {
-    fill(0);
-    text(endDateInput, 700, 90);
+    text(fromInput+(activeBox==1?"|":""),205,90);
+    text(toInput+(activeBox==2?"|" : ""),370,90);
+
+    if (startDateInput.equals("")) {
+      fill(140);
+      text("Select date", 535, 90);
+    } else {
+      fill(0);
+      text(startDateInput, 535, 90);
+    }
+
+    if (endDateInput.equals("")) {
+      fill(140);
+      text("Select date", 700, 90);
+    } else {
+      fill(0);
+      text(endDateInput, 700, 90);
+    }
+  } else if (flightSorterPage) {
+    if (useIATAMode){
+      text("From (Origin)",205,60);
+      text("To (Dest)",535,60);
+    }else{
+      text("From City",205,60);
+      text("To City",370,60);
+    }
   }
 
   fill(0, 120, 255);
