@@ -4,6 +4,7 @@ T. Byrne, Benchmarks CsvToBean loading across all flight CSV files, 07:30, 19/03
 T. Byrne, Refactored into ReadCSV class that loads flight data, 07:50, 19/03/2026
 T. Byrne, Fixes bug in reading, 10:15, 19/03/2026
 T. Byrne, Moves from using OpenCSV to Kryo, improving the speed it takes to load the database in memory, 15:50, 24/03/2026
+T. Byrne, improves code commenting, 13:00, 03/04/2026
 
 */
 
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+// ReadCSV loads flight data by using the fast Kryo .bin file if available or else reads the CSV manually to create its own .bin file
 class ReadCSV {
   private List<Flight> flights;
 
@@ -28,10 +30,10 @@ class ReadCSV {
     File kryoFile = new File(kryoPath);
 
     if (kryoFile.exists()) {
-      flights = KryoHelper.load(kryoPath);
+      flights = KryoHelper.load(kryoPath);   // fast path: binary cache
     } else {
-      flights = CSVParser.parse(filepath);
-      KryoHelper.save(flights, kryoPath);
+      flights = CSVParser.parse(filepath);    // slow path: parse raw CSV
+      KryoHelper.save(flights, kryoPath);     // save cache for next run
     }
   }
 
@@ -40,8 +42,12 @@ class ReadCSV {
   }
 }
 
+// KryoHelper handles serialising/deserialising the flight list to a binary file.
+// Kryo is a fast Java serialisation library, we register ArrayList and Flight
+// with fixed IDs so the binary format stays stable between runs - otherwise
+// depending on which order classes load the auto-assigned IDs can cause problems
 static class KryoHelper {
-  private static final int BUFFER_SIZE = 1024 * 1024;
+  private static final int BUFFER_SIZE = 1024 * 1024; // 1MB read/write buffer, prevents having to go back and forth with disk constantly
 
   static Kryo newKryo() {
     Kryo kryo = new Kryo();
@@ -75,6 +81,8 @@ static class KryoHelper {
   }
 }
 
+// CSVParser manually parses the flight CSV (no external library),
+// used for when there is no .bin file exising for a given CSV
 static class CSVParser {
   static ArrayList<Flight> parse(String filepath) {
     ArrayList<Flight> list = new ArrayList<Flight>();

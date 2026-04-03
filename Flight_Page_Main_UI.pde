@@ -3,17 +3,19 @@ CHANGELOG:
 [Other teammates]
 T. Byrne, gets the system working all together while attempting to follow some OOP prinicpals to break up the files compared to previous impliamention of them all combined, 02:20, 03/04/2026
 T. Byrne, makes the flight listings all use Kryo again, 12:30, 03/04/2026
+T. Byrne, improves code commenting, 13:00, 03/04/2026
 */
 
 import java.util.HashMap;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-// shared data — change this one line to switch dataset
+// shared data - change this one line to switch dataset
 String FLIGHT_CSV = "data/flights_full.csv";
 ArrayList<Flight> allFlights;
 
-// page navigation
+// page navigation - each boolean tracks which page is active.
+// only one should be true at a time; toggled by the dropdown.
 int pageCount = 4;
 Widget[] pages = new Widget[pageCount];
 Widget dropDown = new Widget(0, 0, 150, 50, "Pages", false);
