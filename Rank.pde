@@ -13,20 +13,19 @@ class Rank {
         textSize(20);
         fill(0);
 
-        if (ranking == 1) {
-                text(ranking + "st", 300, yPos); 
-        }
-        else if (ranking == 2) {
-                text(ranking + "nd", 300, yPos); 
-        }
-        else if (ranking == 3) {
-                text(ranking + "rd", 300, yPos); 
-        }
-        else if (ranking == 10) {
-                text(ranking + "th", 300, yPos); 
-        }
-        else {
-                text(ranking + "th", 300, yPos); 
+        switch(ranking) {
+            case 1:
+                text(ranking + "st", 300, yPos);
+                break;
+            case 2:
+                text(ranking + "nd", 300, yPos);
+                break;
+            case 3:
+                text(ranking + "rd", 300, yPos);
+                break;
+            default:
+                text(ranking + "th", 300, yPos);
+                break;
         }
         
   }
