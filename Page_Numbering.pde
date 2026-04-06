@@ -1,3 +1,4 @@
+// Displays current page number on Stats page
 class pageCounter {
   float margin = 20; 
   
