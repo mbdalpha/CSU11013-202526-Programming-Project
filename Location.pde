@@ -1,8 +1,8 @@
 class Location {
 
-  float value;
-  float x;
-  String name;
+  float value;  // Number of flights
+  float x;      // X-position on chart
+  String name;  // Airport name
 
   Location(float value, float x, String name) {
     this.value = value;
@@ -10,6 +10,7 @@ class Location {
     this.name = name;
   }
 
+  // Draws a bar for this location on the chart
   void draw(float bottomY, float chartHeight, float maxValue, float barWidth) {
 
     float barHeight = map(value, 0, maxValue, 0, chartHeight);
