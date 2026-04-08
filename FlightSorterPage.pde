@@ -1,3 +1,9 @@
+/*
+CHANGELOG:
+[Other teammates]
+T. Byrne, FlightSorterPage to actually work and be able to sort and search, 12:30, 08/04/2026
+*/
+
 DateWidget[] dates = new DateWidget[31];
 String from = "From: ";
 String too = "To: "; //too because to leads to syntax error
@@ -100,6 +106,31 @@ void drawFlightSorter(){
 }
 
 void sorterMousePressed(){
+    // text input boxes
+    if (mouseX > 190 && mouseX < 520 && mouseY > 40 && mouseY < 110) {
+      activeBox = 1;
+    }
+    else if (mouseX > 520 && mouseX < 850 && mouseY > 40 && mouseY < 110) {
+      activeBox = 2;
+    }
+    // search button
+    else if (mouseX > 870 && mouseX < 1020 && mouseY > 40 && mouseY < 110) {
+      scrollOffset = 0;
+      targetOffset = 0;
+      performSorterSearch();
+      showResults = true;
+      activeBox = 0;
+    }
+    // IATA/City toggle
+    else if (mouseX > 1035 && mouseX < 1175 && mouseY > 40 && mouseY < 110) {
+      useIATAMode = !useIATAMode;
+      activeBox = 0;
+    }
+    else {
+      activeBox = 0;
+    }
+
+    // ascending/descending toggles
     if (mouseX > ascWidgetX &&
         mouseX < ascWidgetX + ascWidgetW &&
         mouseY > ascWidgetY &&
@@ -115,6 +146,7 @@ void sorterMousePressed(){
       descending.selected = true;
     }
 
+    // date calendar clicks
     for (int i = 0; i < 31; i++) {
         if (mouseX > dates[i].x - radius &&
             mouseX < dates[i].x + radius &&
@@ -142,6 +174,7 @@ void sorterMousePressed(){
             }
           }
       }
+    // clear button
     if (mouseX > clear.x &&
         mouseX < clear.x + clear.w &&
         mouseY > clear.y &&
@@ -150,7 +183,10 @@ void sorterMousePressed(){
            toSelected = false;
            from = "From: ";
            too = "To: ";
+           fromDate = 0;
+           toDate = 0;
         }
+    // duration/lateness sort mode toggles
     if (mouseX > duration.x &&
         mouseX < duration.x + duration.w &&
         mouseY > duration.y &&
@@ -175,4 +211,67 @@ void sorterMousePressed(){
             duration.selected = false;
           }
         }
+}
+
+void sorterKeyPressed() {
+    if (activeBox == 1) {
+      fromInput = updateTextInput(fromInput);
+    }
+    else if (activeBox == 2) {
+      toInput = updateTextInput(toInput);
+    }
+
+    if (key == ENTER || key == RETURN) {
+      scrollOffset = 0;
+      targetOffset = 0;
+      performSorterSearch();
+      showResults = true;
+    }
+}
+
+void performSorterSearch() {
+    SortFlights sorter = new SortFlights();
+    boolean asc = ascending.selected;
+
+    // filter by origin/dest using same logic as performSearch
+    List<Flight> filtered = new ArrayList<Flight>();
+    String sF = fromInput.trim().toUpperCase();
+    String sT = toInput.trim().toUpperCase();
+
+    for (Flight f : allFlights) {
+      boolean mF;
+      boolean mT;
+
+      if (useIATAMode) {
+        mF = sF.isEmpty() || f.origin.toUpperCase().contains(sF);
+        mT = sT.isEmpty() || f.dest.toUpperCase().contains(sT);
+      } else {
+        mF = sF.isEmpty() || normalizeCity(f.originCity).contains(normalizeCity(sF));
+        mT = sT.isEmpty() || normalizeCity(f.destCity).contains(normalizeCity(sT));
+      }
+
+      // filter by date range using isDateInRange from FlightFinderPage
+      String startStr = (fromDate > 0) ? formatJan2022Date(fromDate) : "";
+      String endStr = (toDate > 0) ? formatJan2022Date(toDate) : "";
+      boolean mD = isDateInRange(f.flDate, startStr, endStr);
+
+      if (mF && mT && mD) {
+        filtered.add(f);
+      }
+    }
+
+    // sort by selected mode
+    if (lateness.selected) {
+      filtered = new ArrayList<Flight>(sorter.latenessSort(filtered, asc));
+    } else if (duration.selected) {
+      filtered = new ArrayList<Flight>(sorter.dateSort(filtered, asc));
+    }
+
+    searchResults = new ArrayList<Flight>(filtered);
+
+    if (searchResults.size() > 0) {
+      selectedFlight = searchResults.get(0);
+    } else {
+      selectedFlight = null;
+    }
 }

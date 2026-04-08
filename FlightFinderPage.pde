@@ -1,3 +1,9 @@
+/*
+CHANGELOG:
+[Other teammates]
+T. Byrne, FlightSorterPage to actually work and be able to sort and search, 12:30, 08/04/2026
+*/
+
 //Flight Finder variables
 
 ArrayList<Flight> searchResults=new ArrayList<Flight>();
@@ -253,8 +259,14 @@ void drawHeaderSearch(){
       text("To (Dest)",535,60);
     }else{
       text("From City",205,60);
-      text("To City",370,60);
+      text("To City",535,60);
     }
+
+    fill(0);
+    textSize(18);
+
+    text(fromInput+(activeBox==1?"|":""),205,90);
+    text(toInput+(activeBox==2?"|":""),535,90);
   }
 
   fill(0, 120, 255);

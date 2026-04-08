@@ -4,6 +4,7 @@ CHANGELOG:
 T. Byrne, gets the system working all together while attempting to follow some OOP prinicpals to break up the files compared to previous impliamention of them all combined, 02:20, 03/04/2026
 T. Byrne, makes the flight listings all use Kryo again, 12:30, 03/04/2026
 T. Byrne, improves code commenting, 13:00, 03/04/2026
+T. Byrne, FlightSorterPage to actually work and be able to sort and search, 12:30, 08/04/2026
 */
 
 import java.util.HashMap;
@@ -98,4 +99,5 @@ void mousePressed() {
 void keyPressed() {
   if (flightFinderPage)        finderKeyPressed();
   else if (airportFlightsPage) airportKeyPressed();
+  else if (flightSorterPage)   sorterKeyPressed();
 }
