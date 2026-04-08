@@ -7,6 +7,7 @@ T. Byrne, Adds least reliable airports, 17:05, 19/03/2026
 T. Byrne, Adds date range search function, 11:00, 26/03/2026
 T. Byrne, Adds blueprint for airport search function (currently unfuctional), 17:00, 26/03/2026
 T. Byrne, Finishes airport search function, using simpiler approach, 15:40, 27/03/2026
+T. Byrne, fixes statistics pages not loading properly, 11:00, 08/04/2026
 
 */
 
@@ -142,7 +143,7 @@ class SortFlights {
           if (airports.get(i).aberviation.equals(a)) {
             position = i;
             airports.get(i).flightCount++;
-            airports.get(i).cancelledOrDiverted += (Integer.parseInt(f.cancelled) + Integer.parseInt(f.diverted));
+            airports.get(i).cancelledOrDiverted += ((int)Float.parseFloat(f.cancelled) + (int)Float.parseFloat(f.diverted));
           }
         }
         if (position == -1) {
@@ -150,7 +151,7 @@ class SortFlights {
           newAirport.aberviation = a;
           newAirport.city = cities[j];
           newAirport.flightCount = 1;
-          newAirport.cancelledOrDiverted = (Integer.parseInt(f.cancelled) + Integer.parseInt(f.diverted));
+          newAirport.cancelledOrDiverted = ((int)Float.parseFloat(f.cancelled) + (int)Float.parseFloat(f.diverted));
           airports.add(newAirport);
         }
       }

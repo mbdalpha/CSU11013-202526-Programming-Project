@@ -3,22 +3,23 @@ CHANGELOG:
 [Other teammates]
 T. Byrne, gets the system working all together while attempting to follow some OOP prinicpals to break up the files compared to previous impliamention of them all combined, 02:20, 03/04/2026
 T. Byrne, makes the flight listings all use Kryo again, 12:30, 03/04/2026
+T. Byrne, fixes statistics pages not loading properly, 11:00, 08/04/2026
 */
 
 
 //array printed out on Page 1 from left to right for both 'busyAirportNames'
 //and 'busyValues'. sort from largest to smallest from left to right for top 20
 //busiest airports and their respective values.
-String[] busyAirportNames = {"LAX", "LHR", "JFK", "CDG", "DXB", "LAX", "LHR", "JFK", "CDG", "DXB"};
-int[] busyValues = {300, 800, 1200, 600, 1500, 300, 800, 1200, 600, 1500};
+String[] busyAirportNames;
+int[] busyValues;
 
 //array printed out on Page 2 from top to bottom for both 'leastReliableAirportNames'
 //and 'NoOfFlightsCancelledOrDelayed'. Reading array from left to right shows the
 //Least reliable to 10th least reliable airport.
-String[] leastReliableAirportNames = {"LAX", "LHR", "JFK", "CDG", "DXB", "LAX", "LHR", "JFK", "CDG", "DXB"};
+String[] leastReliableAirportNames;
 //number of flights cancelled or delayed, position of integer in array corresponds to index
 //of airports in the String array
-int[] NoOfFlightsCancelledOrDelayed = {232, 500, 1000, 10, 100, 232, 500, 1000, 10, 100};
+int[] NoOfFlightsCancelledOrDelayed;
 
 
 int[] Ranking = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -53,13 +54,32 @@ void initStats(){
 
     thePageCounter = new pageCounter();
 
+    // compute busiest airports from actual flight data
+    SortFlights sorter = new SortFlights();
+    List<Airport> busiest = sorter.sortByBusiest(allFlights, SortFlights.DESCENDING);
+    int count = min(totalAirports, busiest.size());
+    busyAirportNames = new String[count];
+    busyValues = new int[count];
+    for (int i = 0; i < count; i++) {
+      busyAirportNames[i] = busiest.get(i).aberviation;
+      busyValues[i] = busiest.get(i).flightCount;
+    }
+
+    // compute least reliable airports from actual flight data
+    List<Airport> leastReliable = sorter.sortByReliability(allFlights, SortFlights.DESCENDING);
+    int reliableCount = min(10, leastReliable.size());
+    leastReliableAirportNames = new String[reliableCount];
+    NoOfFlightsCancelledOrDelayed = new int[reliableCount];
+    for (int i = 0; i < reliableCount; i++) {
+      leastReliableAirportNames[i] = leastReliable.get(i).aberviation;
+      NoOfFlightsCancelledOrDelayed[i] = leastReliable.get(i).cancelledOrDiverted;
+    }
+
     marks = new Marking(120, 660, 540, flightDataSize, step);
 
-    for (int i = 0; i < totalAirports; i++) {
-      int index = i % busyValues.length;
+    for (int i = 0; i < count; i++) {
       int xPos = startX + i * spacing1;
-
-      theLocation[i] = new Location(busyValues[index], xPos, busyAirportNames[index]);
+      theLocation[i] = new Location(busyValues[i], xPos, busyAirportNames[i]);
     }
 
     for (int i = 0; i < 10; i++) {
@@ -162,7 +182,7 @@ void drawPage1() {
 
   float bottomY = topPad + chartHeight;
 
-  int maxVal = flightDataSize;
+  int maxVal = 0;
   for (int v : busyValues) {
     if (v > maxVal) maxVal = v;
   }
@@ -174,9 +194,9 @@ void drawPage1() {
   marks.draw();
 
 
-  float barWidth = chartWidth / (float) totalAirports;
+  float barWidth = chartWidth / (float) busyValues.length;
 
-  for (int i = 0; i < totalAirports; i++) {
+  for (int i = 0; i < busyValues.length; i++) {
     float x = leftPad + i * barWidth;
     theLocation[i].x = x;
     theLocation[i].draw(bottomY, chartHeight, maxVal, barWidth);
