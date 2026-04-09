@@ -56,6 +56,7 @@ Widget descending = new Widget(desWidgetX, desWidgetY,
 void initFlightSorter(){
     //Flight sorter setup
 
+    //creates the date widgets
     for (int i = 0; i < 31; i++) {
         int date = i + 1;
         int index = i + 5; //5 offsets it so 1 starts on the 6th column (Saturday)
