@@ -15,13 +15,10 @@ class Widget {
   
   void draw() {
     if (selected) {
-      fill(150);
+      fill(150); //Selected widgets are dark grey
     }
     else {
-      fill(200);
-    }
-    if (label == "Search") {
-      fill(200, 225, 255);
+      fill(200); //Unselected widgets are light grey
     }
     if (roundedCorners) {
       rect(x, y, w, h, 10);

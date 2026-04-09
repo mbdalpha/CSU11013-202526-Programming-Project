@@ -41,25 +41,26 @@ float desWidgetX = 100;
 float desWidgetY = 450;
 
 Widget duration = new Widget(dateWidgetX, dateWidgetY,
-                              widgetW, widgetH, "Duration", true);
+                             widgetW, widgetH, "Duration", true);
 Widget lateness = new Widget(lateWidgetX, lateWidgetY,
-                              widgetW, widgetH, "Lateness", true);
+                             widgetW, widgetH, "Lateness", true);
 Widget search = new Widget(searchWidgetX, searchWidgetY,
-                              widgetW, widgetH, "Search", true);
+                           widgetW, widgetH, "Search", true);
 Widget clear = new Widget(clearX, clearY,
                           widgetW / 1.5, widgetH / 1.5, "clear", true);
 Widget ascending = new Widget(ascWidgetX, ascWidgetY,
-                          ascWidgetW, ascWidgetH, "↑", true);
+                              ascWidgetW, ascWidgetH, "↑", true);
 Widget descending = new Widget(desWidgetX, desWidgetY,
-                          ascWidgetW, ascWidgetH, "↓", true);
+                               ascWidgetW, ascWidgetH, "↓", true);
 
 void initFlightSorter(){
     //Flight sorter setup
 
+    //creates the date widgets
     for (int i = 0; i < 31; i++) {
         int date = i + 1;
-        int index = i + 5; //5 offsets it so 1 starts on 6th column (Saturday)
-        int col = index % 7; //7 being the total columns (days in a week)
+        int index = i + 5; //5 offsets it so 1 starts on the 6th column (Saturday)
+        int col = index % 7; //7 is the total number of columns (days in a week)
         int row = index / 7;
 
         float x = startX2 + col * (radius + gap);
@@ -72,12 +73,12 @@ void initFlightSorter(){
 void drawFlightSorter(){
     background(10, 25, 45);
     textSize(20);
-
     fill(255);
+
+  //to draw the calendar background
     stroke(0);
     strokeWeight(2);
     rect(fromX - 110, fromY - 70, 615, 480, 10);
-
     fill(0);
     line(fromX - 110, fromY + 20, fromX + 505, fromY + 20);
 
@@ -87,6 +88,7 @@ void drawFlightSorter(){
     ascending.draw();
     descending.draw();
 
+  //to draw the calendar
     for (int i = 0; i < 31; i++) {
       dates[i].draw();
     }
@@ -148,10 +150,10 @@ void sorterMousePressed(){
 
     // date calendar clicks
     for (int i = 0; i < 31; i++) {
-        if (mouseX > dates[i].x - radius &&
-            mouseX < dates[i].x + radius &&
-              mouseY > dates[i].y - radius &&
-              mouseY < dates[i].y + radius) {
+        if (mouseX > dates[i].x - radius/2 &&
+            mouseX < dates[i].x + radius/2 &&
+              mouseY > dates[i].y - radius/2 &&
+              mouseY < dates[i].y + radius/2) {
             if (!fromSelected && !toSelected && dates[i].date < 10) {
               from = from + "0" + dates[i].date + "/01/2022";
               fromSelected = true;
