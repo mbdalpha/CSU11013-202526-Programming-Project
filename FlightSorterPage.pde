@@ -150,10 +150,10 @@ void sorterMousePressed(){
 
     // date calendar clicks
     for (int i = 0; i < 31; i++) {
-        if (mouseX > dates[i].x - radius &&
-            mouseX < dates[i].x + radius &&
-              mouseY > dates[i].y - radius &&
-              mouseY < dates[i].y + radius) {
+        if (mouseX > dates[i].x - radius/2 &&
+            mouseX < dates[i].x + radius/2 &&
+              mouseY > dates[i].y - radius/2 &&
+              mouseY < dates[i].y + radius/2) {
             if (!fromSelected && !toSelected && dates[i].date < 10) {
               from = from + "0" + dates[i].date + "/01/2022";
               fromSelected = true;
