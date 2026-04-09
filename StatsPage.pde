@@ -398,22 +398,22 @@ void computeLateness(ArrayList<Flight> flights) {
 
     int scheduledHHMM = int(float(scheduledArrival));
     int actualHHMM    = int(float(actualArrival));
-    int scheduledMins = (scheduledHHMM / 100) * 60 + (scheduledHHMM % 100);
+    int scheduledMins = (scheduledHHMM / 100) * 60 + (scheduledHHMM % 100);    //convert the csv format for time into minutes
     int actualMins    = (actualHHMM    / 100) * 60 + (actualHHMM    % 100);
 
-    float minutesLate = actualMins - scheduledMins;
+    float minutesLate = actualMins - scheduledMins;                            //compute the time difference
 
-    if (minutesLate < -720) minutesLate += 1440;
-    if (minutesLate >  720) minutesLate -= 1440;
-
+    if (minutesLate < -720) minutesLate += 1440;                               //to remove errors with flights crossing over midnight
+    if (minutesLate >  720) minutesLate -= 1440;                                   //take away one day (in minutes)
+        
     if (minutesLate < 15) continue;
 
     totalLateFlights++;
 // sort the flights into lateness categories
     if (minutesLate >= 300) {
-      flightCounts[totalBars - 1]++;
+      flightCounts[totalBars - 1]++;                                           //create the 300+ minutes late bracket if needed
     } else {
-      int barIndex = int((minutesLate - 15) / 20);
+      int barIndex = int((minutesLate - 15) / 20);                              
       if (barIndex >= 0 && barIndex < totalBars - 1) flightCounts[barIndex]++;
     }
   }
