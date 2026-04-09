@@ -3,6 +3,7 @@ CHANGELOG:
 [Other teammates]
 T. Byrne, FlightSorterPage to actually work and be able to sort and search, 12:30, 08/04/2026
 P. Zhu, added date sort type
+T. Byrne, Fixes duration sort, 16:30, 09/04/2026
 */
 
 DateWidget[] dates = new DateWidget[31];
@@ -294,7 +295,7 @@ void performSorterSearch() {
     if (lateness.selected) {
       filtered = new ArrayList<Flight>(sorter.latenessSort(filtered, asc));
     } else if (duration.selected) {
-      filtered = new ArrayList<Flight>(sorter.dateSort(filtered, asc));
+      filtered = new ArrayList<Flight>(sorter.sortByDuration(filtered, asc));
     }
 
     searchResults = new ArrayList<Flight>(filtered);

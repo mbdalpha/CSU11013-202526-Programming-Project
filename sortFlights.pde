@@ -8,6 +8,7 @@ T. Byrne, Adds date range search function, 11:00, 26/03/2026
 T. Byrne, Adds blueprint for airport search function (currently unfuctional), 17:00, 26/03/2026
 T. Byrne, Finishes airport search function, using simpiler approach, 15:40, 27/03/2026
 T. Byrne, fixes statistics pages not loading properly, 11:00, 08/04/2026
+T. Byrne, adds sortByDuration, 16:30, 09/04/2026
 
 */
 
@@ -63,6 +64,16 @@ class SortFlights {
   public List<Flight> sortByDestCity(List<Flight> flightList, boolean ascending) {
     return sortBy(flightList, ascending, new Comparator<Flight>() {
       public int compare(Flight a, Flight b) { return a.destCity.compareTo(b.destCity); }
+    });
+  }
+
+  public List<Flight> sortByDuration(List<Flight> flightList, boolean ascending) {
+    return sortBy(flightList, ascending, new Comparator<Flight>() {
+      public int compare(Flight a, Flight b) {
+        int durationA = timeToMinutes(a.arrTime) - timeToMinutes(a.depTime);
+        int durationB = timeToMinutes(b.arrTime) - timeToMinutes(b.depTime);
+        return durationA - durationB;
+      }
     });
   }
 
