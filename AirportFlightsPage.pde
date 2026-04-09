@@ -1,3 +1,6 @@
+//R. Bhalekar writes code for flightsByAirport page, 26/03/2026
+//R. Bhalekar writes code comments, 07/04/2026
+
 String airportInput = ""; // stores the user's typed airport code input
 boolean activeBox2 = false;
 
