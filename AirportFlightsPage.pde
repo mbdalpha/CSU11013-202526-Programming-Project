@@ -96,7 +96,6 @@ void drawHeaderSearch2()
   rect(870, 40, 150, 70, 10);
   fill(255);
   textAlign(CENTER, CENTER);
-  textSize(16);
   text("SEARCH", 945, 75);
   textAlign(LEFT, BASELINE);
 }
