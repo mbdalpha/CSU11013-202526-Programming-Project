@@ -4,6 +4,7 @@ CHANGELOG:
 T. Byrne, gets the system working all together while attempting to follow some OOP prinicpals to break up the files compared to previous impliamention of them all combined, 02:20, 03/04/2026
 T. Byrne, makes the flight listings all use Kryo again, 12:30, 03/04/2026
 T. Byrne, fixes statistics pages not loading properly, 11:00, 08/04/2026
+T. Byrne, Defer loading Statistics page until it is clicked in order to reduce load time, 9:30, 09/04/2026
 N. Puligundla adds in comments, 9/04/2026
 */
 
@@ -23,6 +24,7 @@ String[] leastReliableAirportNames;
 int[] NoOfFlightsCancelledOrDelayed;
 
 
+boolean statsInitialized = false;
 int[] Ranking = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
 int flightDataSize;
@@ -99,7 +101,25 @@ void initStats(){
     computeLateness(allFlights);
 }
 
+boolean statsLoading = false;
+
 void drawStats(){
+    if (!statsInitialized) {
+      if (!statsLoading) {
+        // first frame: draw loading screen, set flag so next frame runs init
+        statsLoading = true;
+        background(10, 25, 45);
+        fill(255);
+        textAlign(CENTER, CENTER);
+        textSize(28);
+        text("Loading Statistics...", width / 2, height / 2);
+        return;
+      }
+      // second frame: actually run the heavy init
+      initStats();
+      statsInitialized = true;
+      statsLoading = false;
+    }
     background(10,25,45);
     drawButtons();
 
