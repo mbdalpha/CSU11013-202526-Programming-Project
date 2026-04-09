@@ -5,6 +5,7 @@ T. Byrne, gets the system working all together while attempting to follow some O
 T. Byrne, makes the flight listings all use Kryo again, 12:30, 03/04/2026
 T. Byrne, improves code commenting, 13:00, 03/04/2026
 T. Byrne, FlightSorterPage to actually work and be able to sort and search, 12:30, 08/04/2026
+T. Byrne, Defer loading Statistics page until it is clicked in order to reduce load time, 9:30, 09/04/2026
 */
 
 import java.util.HashMap;
@@ -30,13 +31,12 @@ void setup() {
 
   // load csv using ReadCSV + kryo
   ReadCSV csv = new ReadCSV(sketchPath(FLIGHT_CSV));
-  allFlights = new ArrayList<Flight>(csv.getFlights());
+  allFlights = (ArrayList<Flight>) csv.getFlights();
 
-  // init each page
+  // init each page (initStats is deferred until the user opens that page)
   initFlightFinder();
   initAirportFlights();
   initFlightSorter();
-  initStats();
 
   // page dropdown
   for (int i = 0; i < pageCount; i++) {
@@ -65,10 +65,7 @@ void draw() {
     for (int i = 0; i < pageCount; i++) pages[i].draw();
   }
 }
-void mouseWheel(MouseEvent event) {
-  if (flightFinderPage)           {finderMouseWheel(event); }
-  else if (airportFlightsPage)   {airportsMouseWheel(event); }
-}
+void mouseWheel(MouseEvent event) { finderMouseWheel(event); }
 void mouseDragged()               { finderMouseDragged(); }
 void mouseReleased()              { finderMouseReleased(); }
 
