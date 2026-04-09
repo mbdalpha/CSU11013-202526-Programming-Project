@@ -157,21 +157,25 @@ void sorterMousePressed(){
             if (!fromSelected && !toSelected && dates[i].date < 10) {
               from = from + "0" + dates[i].date + "/01/2022";
               fromSelected = true;
+              dates[i].selected = true;
               fromDate = dates[i].date;
             }
             else if (!fromSelected && !toSelected) {
               from = from + dates[i].date + "/01/2022";
               fromSelected = true;
+              dates[i].selected = true;
               fromDate = dates[i].date;
             }
             else if (!toSelected && dates[i].date < 10) {
               too = too + "0" + dates[i].date + "/01/2022";
               toSelected = true;
+              dates[i].selected = true;
               toDate = dates[i].date;
             }
             else if (!toSelected) {
               too = too + dates[i].date + "/01/2022";
               toSelected = true;
+              dates[i].selected = true;
               toDate = dates[i].date;
             }
           }
@@ -187,6 +191,9 @@ void sorterMousePressed(){
            too = "To: ";
            fromDate = 0;
            toDate = 0;
+           for (int i = 0; i < 31; i++) {
+             dates[i].selected = false;
+           }
         }
     // duration/lateness sort mode toggles
     if (mouseX > duration.x &&
