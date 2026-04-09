@@ -4,6 +4,7 @@ CHANGELOG:
 T. Byrne, gets the system working all together while attempting to follow some OOP prinicpals to break up the files compared to previous impliamention of them all combined, 02:20, 03/04/2026
 T. Byrne, makes the flight listings all use Kryo again, 12:30, 03/04/2026
 T. Byrne, fixes statistics pages not loading properly, 11:00, 08/04/2026
+N. Puligundla adds in comments, 09/04/2026
 */
 
 
@@ -113,28 +114,28 @@ void drawStats(){
 }
 
 void statsMousePressed(){
-      if (mouseX > 200 && mouseX < 360 &&
-          mouseY > 40 && mouseY < 100) {
+      if (mouseX > 200 && mouseX < 360 &&              // if 'Prev' button pressed
+          mouseY > 40 && mouseY < 100) {               
 
-        currentPage--;
+        currentPage--;                                 // Page decrements
         if (currentPage <= 1) {
           currentPage = 1;
         }
       }
 
-      if (mouseX > width - 180 && mouseX < width - 40 &&
+      if (mouseX > width - 180 && mouseX < width - 40 &&    // if 'Next' button pressed
           mouseY > 40 && mouseY < 100) {
 
-        currentPage++;
+        currentPage++;                                      // Page increments
         if (currentPage >= totalPages) {
           currentPage = totalPages;
         }
       }
 
-      if (mouseX > 40 && mouseX < 180 &&
+      if (mouseX > 40 && mouseX < 180 &&                    // if 'Back' button pressed
           mouseY > 700 && mouseY < 760) {
 
-          flightFinderPage = true;
+          flightFinderPage = true;                          // Enters Flight Finder
           for (int j = 0; j < pageCount; j++) {
             pages[j].selected = false;
           }
@@ -172,47 +173,54 @@ void drawButtons() {
 
 void drawPage1() {
 
+// Screen margins
   int leftPad = 120;
   int rightPad = 80;
   int topPad = 120;
   int bottomPad = 140;
 
+// Chart parameters
   int chartWidth  = width  - leftPad - rightPad;
   int chartHeight = height - topPad  - bottomPad;
 
-  float bottomY = topPad + chartHeight;
+  float bottomY = topPad + chartHeight;      // Y position of the bottom of the chart
 
   int maxVal = 0;
   for (int v : busyValues) {
     if (v > maxVal) maxVal = v;
   }
 
-  stroke(100);
+// Draw axes (x and y axis lines)
+  stroke(100);                                                  
   line(leftPad, bottomY, leftPad + chartWidth, bottomY);
   line(leftPad, topPad, leftPad, bottomY);
 
   marks.draw();
 
-
+// Calculate barWidth dependent on number of airports
   float barWidth = chartWidth / (float) busyValues.length;
 
+// Loop through all airports and draw bars
   for (int i = 0; i < busyValues.length; i++) {
     float x = leftPad + i * barWidth;
     theLocation[i].x = x;
-    theLocation[i].draw(bottomY, chartHeight, maxVal, barWidth);
+    theLocation[i].draw(bottomY, chartHeight, maxVal, barWidth);    // Draw bar using Location class
   }
 
+// Chart title
   fill(255);
   textAlign(CENTER);
   textSize(32);
   text("Busiest Airport Bar Chart", width / 2, 60);
 
+// X-axis label
   textSize(25);
   text("Airport", width / 2, height - 40);
 
+// Y-axis label (rotated vertically)
   pushMatrix();
   translate(40, topPad + chartHeight / 2);
-  rotate(-HALF_PI);
+  rotate(-HALF_PI);    // rotate text 90 degrees anti-clockwise
   textAlign(CENTER, CENTER);
   text("Number of Flights", 0, 0);
   popMatrix();
@@ -220,14 +228,17 @@ void drawPage1() {
 
 void drawPage2() {
 
+// Draw outer box for table
   fill(255);
   stroke(220);
   strokeWeight(1);
   rect(232, startY - 85, 800, 625, 10);
 
+// Draw vertical column separators
   line(375, startY - 50, 375, 740);
   line(550, startY - 50, 550, 740);
 
+// Draw horizontal row separators
   for (int i = 0; i < 9; i++) {
     int tempStartY = 210;
     line(232, (tempStartY + i * spacing2), 1032, (tempStartY + i * spacing2));
@@ -237,21 +248,24 @@ void drawPage2() {
   fill(18, 136, 179);
   rect(230, startY - 85, 805, 45, 10);
 
+// Page title
   fill(255);
   textAlign(CENTER);
   textSize(32);
   text("Least reliable Airport Ranking", width / 2, 60);
 
+// Column headers
   text("Ranking", 310, startY - 50);
   text("Airport", 460, startY - 50);
   text("No of flights cancelled / delayed", 790, startY - 50);
 
+// Draw ranking number using Rank class
   for (int i = 0; i < 10; i++) {
     theRank[i].draw();
 
     int yPos = (startY + i * spacing2) - 10;
-    text(leastReliableAirportNames[i], 460, yPos);
-    text(NoOfFlightsCancelledOrDelayed[i], 790, yPos);
+    text(leastReliableAirportNames[i], 460, yPos);            // Display airport abbreviation
+    text(NoOfFlightsCancelledOrDelayed[i], 790, yPos);        // Display number of cancelled or delayed flights
   }
 
 }
