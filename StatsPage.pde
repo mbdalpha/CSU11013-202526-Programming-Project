@@ -297,16 +297,16 @@ void drawPage3() {
   textSize(32);
   text("Flight Arrival Lateness — Frequency Chart", width / 2 + 70, 60);
 
-
+// create chart boundaries
   int leftPad = 80, rightPad = 30, topPad = 150, bottomPad = 90;
   int chartWidth = width  - leftPad - rightPad;
   int chartHeight = height - topPad  - bottomPad - 35;
-
+// find value of the tallest bar
   int tallestBar = 0;
   for (int count : flightCounts) if (count > tallestBar) tallestBar = count;
 
   float barWidth = (float)chartWidth / totalBars;
-
+// draw grid lines on the chart
   int numberOfYLines = 6;
   for (int i = 0; i <= numberOfYLines; i++)
   {
@@ -326,7 +326,7 @@ void drawPage3() {
     textSize(12);
     text(int(yValue), leftPad - 10, yOnScreen);
   }
-
+// draw bars
   for (int i = 0; i < totalBars; i++)
   {
     float barHeight = map(flightCounts[i], 0, tallestBar, 0, chartHeight);
@@ -360,12 +360,12 @@ void drawPage3() {
     textSize(11);
     text(xLabels[i], xOnScreen + barWidth / 2, topPad + chartHeight + 8);
   }
-
+// draw axis lines
   stroke(100);
   strokeWeight(1.5);
   line(leftPad, topPad + chartHeight, leftPad + chartWidth, topPad + chartHeight);
   line(leftPad, topPad, leftPad, topPad + chartHeight);
-
+// draw chart labels
   fill(255);
   textSize(12);
   textAlign(CENTER, BOTTOM);
@@ -383,17 +383,18 @@ void drawPage3() {
   fill(255);
   textAlign(RIGHT, TOP);
   textSize(11);
+// draw total number of late flights
   text("Total late flights (>= 15 min): " + totalLateFlights, width - rightPad, topPad);
 }
 
 void computeLateness(ArrayList<Flight> flights) {
   for (Flight f : flights) {
-    if (f.cancelled.trim().startsWith("1")) continue;
-    if (f.diverted.trim().startsWith("1")) continue;
+    if (f.cancelled.trim().startsWith("1")) continue;       // ignore if flight is cancelled
+    if (f.diverted.trim().startsWith("1")) continue;        // ignore if flight is diverted
 
     String actualArrival    = f.arrTime.trim();
     String scheduledArrival = f.crsArrTime.trim();
-    if (actualArrival.length() == 0 || scheduledArrival.length() == 0) continue;
+    if (actualArrival.length() == 0 || scheduledArrival.length() == 0) continue;    // ignore if real arrival time or schedued arrival time is empty
 
     int scheduledHHMM = int(float(scheduledArrival));
     int actualHHMM    = int(float(actualArrival));
@@ -408,7 +409,7 @@ void computeLateness(ArrayList<Flight> flights) {
     if (minutesLate < 15) continue;
 
     totalLateFlights++;
-
+// sort the flights into lateness categories
     if (minutesLate >= 300) {
       flightCounts[totalBars - 1]++;
     } else {
