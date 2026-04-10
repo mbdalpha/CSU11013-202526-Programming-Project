@@ -1,3 +1,9 @@
+/*
+CHANGELOG:
+N. Puligundla commits Rank.pde, 02/04/2026
+N. Puligundla uses switch case instead of if else statements, 6/04/2026
+*/
+
 class Rank {
 
   int ranking;
