@@ -6,6 +6,7 @@ T. Byrne, makes the flight listings all use Kryo again, 12:30, 03/04/2026
 T. Byrne, fixes statistics pages not loading properly, 11:00, 08/04/2026
 T. Byrne, Defer loading Statistics page until it is clicked in order to reduce load time, 9:30, 09/04/2026
 N. Puligundla adds in comments, 9/04/2026
+R. Bhalekar adds code comments, 9/04/2026
 */
 
 
