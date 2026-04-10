@@ -1,3 +1,9 @@
+/*
+CHANGELOG:
+N. Puligundla commits Location.pde, 02/04/2026
+N. Puligundla adds comments, 6/04/2026
+*/
+
 class Location {
 
   float value;  // Number of flights
