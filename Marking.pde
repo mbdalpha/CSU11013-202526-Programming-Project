@@ -1,3 +1,9 @@
+/*
+CHANGELOG:
+N. Puligundla commits Marking.pde, 02/04/2026
+N. Puligundla adds comments, 6/04/2026
+*/
+
 // Draws Y-axis markings and grid lines
 class Marking {
   float x;          // X-position of the Y-axis
@@ -31,7 +37,7 @@ class Marking {
           strokeWeight(1);
           line(x, y, 1100, y); 
 
-	        // Draw tick mark
+	      // Draw tick mark
           stroke(150);
           line(x - 5, y, x, y);
 
