@@ -1,3 +1,9 @@
+/*
+CHANGELOG:
+N. Puligundla commits Page_Numbering.pde, 02/04/2026
+N. Puligundla adds comments, 6/04/2026
+*/
+
 // Displays current page number on Stats page
 class pageCounter {
   float margin = 20; 
