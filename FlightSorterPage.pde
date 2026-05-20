@@ -2,6 +2,7 @@
 CHANGELOG:
 [Other teammates]
 T. Byrne, FlightSorterPage to actually work and be able to sort and search, 12:30, 08/04/2026
+P. Zhu, added date sort type
 T. Byrne, Fixes duration sort, 16:30, 09/04/2026
 */
 
@@ -15,10 +16,12 @@ int toDate = 0;
 
 float widgetW = 200;
 float widgetH = 60;
-float dateWidgetX = 550;
-float dateWidgetY = 160;
-float lateWidgetX = 300;
+float duraWidgetX = 650;
+float duraWidgetY = 160;
+float lateWidgetX = 375;
 float lateWidgetY = 160;
+float dateWidgetX = 100;
+float dateWidgetY = 160;
 float searchWidgetX = 900;
 float searchWidgetY = 70;
 
@@ -41,10 +44,12 @@ float ascWidgetH = 150;
 float desWidgetX = 100;
 float desWidgetY = 450;
 
-Widget duration = new Widget(dateWidgetX, dateWidgetY,
+Widget duration = new Widget(duraWidgetX, duraWidgetY,
                              widgetW, widgetH, "Duration", true);
 Widget lateness = new Widget(lateWidgetX, lateWidgetY,
                              widgetW, widgetH, "Lateness", true);
+Widget date = new Widget(dateWidgetX, dateWidgetY,
+                         widgetW, widgetH, "Date", true);
 Widget search = new Widget(searchWidgetX, searchWidgetY,
                            widgetW, widgetH, "Search", true);
 Widget clear = new Widget(clearX, clearY,
@@ -88,6 +93,7 @@ void drawFlightSorter(){
     clear.draw();
     ascending.draw();
     descending.draw();
+    date.draw();
 
   //to draw the calendar
     for (int i = 0; i < 31; i++) {
@@ -207,6 +213,7 @@ void sorterMousePressed(){
           else {
             duration.selected = true;
             lateness.selected = false;
+            date.selected = false;
           }
         }
     if (mouseX > lateness.x &&
@@ -218,6 +225,20 @@ void sorterMousePressed(){
           }
           else {
             lateness.selected = true;
+            duration.selected = false;
+            date.selected = false;
+          }
+        }
+    if (mouseX > date.x &&
+        mouseX < date.x + date.w &&
+        mouseY > date.y &&
+        mouseY < date.y + date.h) {
+          if (date.selected == true) {
+            date.selected = false;
+          }
+          else {
+            date.selected = true;
+            lateness.selected = false;
             duration.selected = false;
           }
         }
